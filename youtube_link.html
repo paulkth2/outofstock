@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+
+  <script>
+    function getLink(link) {
+      var str = link.split("=");
+      if(str[0] == "https://www.youtube.com/watch?v") {
+        window.location.href = "./youtube_see.html?key=" + str[1];
+      }
+      else {
+        alert("제대로 된 주소를 입력해주세요.\n예: https://www.youtube.com/watch?v=xxxxxxxxxxx");
+      }
+    }
+  </script>
 </head>
 
 <body>
@@ -30,8 +42,8 @@
       <div class="row" style="">
         <div class="mx-auto col-lg-8 col-md-9 offset-md-1">
           <h1 class="mb-4 display-4"> Youtube Link </h1>
-          <input style = "width: 80%" type = "text" id = "ntext" placeholder = " 링크를 넣어주세요. 예: https://www.youtube.com/watch?v=xxxxxxxxxxx"> </input> <br> <br>
-	  <a class="btn btn-lg btn-primary mx-1" href = "./youtube_see.html"> 입력 </a> <br><br><br><br><br><br><br><br><br>
+          <input style = "width: 80%" type = "text" id = "text1" placeholder = " 링크를 넣어주세요. 예: https://www.youtube.com/watch?v=xxxxxxxxxxx"> </input> <br> <br>
+	  <a class="btn btn-lg btn-primary mx-1" href = "#" onclick = "getLink(document.getElementById('text1').value); return false;"> 입력 </a> <br><br><br><br><br><br><br><br><br>
         </div>
       </div>
     </div>
