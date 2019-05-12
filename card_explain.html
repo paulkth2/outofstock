@@ -34,10 +34,10 @@
       
       if(url.indexOf("?") != -1) {
         var keys = url.split("?");
-        if(keys.length != 4) { invalid(); }
-        idpw = keys[1] + '@' + keys[2];
-        if(keys[3].indexOf("=") == -1) { invalid(); }
-        key = keys[3].split("=")[1];
+        if(keys.length != 3) { invalid(); }
+        idpw = keys[1];
+        if(keys[2].indexOf("=") == -1) { invalid(); }
+        key = keys[2].split("=")[1];
         if(key == "") { invalid(); }
         startpage();
       }
@@ -101,16 +101,16 @@
         }
         writeTD();
         if(confirm("세부 설명을 입력하시겠습니까?")) {
-          window.location.href = "./makeWiki.html?" + idpw.split("@")[0] + "?" + idpw.split("@")[1] + "?key=" + key;
+          window.location.href = "./makeWiki.html?" + idpw + "?key=" + key;
         } else {
-          window.location.href = "./madeCard.html"
+          window.location.href = "./madeCard.html?" + idpw;
         }
       }
     }
   </script>
 </head>
 
-<body style = "background-color: #AAAAAA;">
+<body style = "background-color: #ededed;">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container"> <a class="navbar-brand" href="./index.html">
         <i class="fa d-inline fa-lg fa-stop-circle"></i>
@@ -130,7 +130,7 @@
 
   <center>
   <div style = "width: 80%; background-color: white; text-align: left; padding: 12px;">
-    <h1> <a style = "font-weight: bold"> 메뉴: </a> &nbsp; <input id = "menu" type = "text" style = "width: 320px" placeholder = "메뉴 이름"> </input> </h1>
+    <h1> <a style = "font-weight: bold;"> 메뉴: </a> &nbsp; <input id = "menu" type = "text" style = "width: 320px;" placeholder = "메뉴 이름"> </input> </h1>
     <div style = "text-align: left;">
     <p> <a style = "font-weight: bold"> 재료: </a> &nbsp; <input type = "text" id = "ing1" style = "width: 150px" placeholder = "재료 1"> &nbsp; <input type = "text" id = "ing2" style = "width: 150px" placeholder = "재료 2"> &nbsp; <input type = "text" id = "ing3" style = "width: 150px" placeholder = "재료 3"> </p>
     <textarea id = "text" placeholder = "설명을 써주세요." style = "width: 100%; height: 500px; resize: none;"></textarea>

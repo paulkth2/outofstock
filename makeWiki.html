@@ -45,6 +45,7 @@ ul.tabs li.current{
     var idpw = null;
     var key = null;
     var url = window.location.href;
+    var istab1 = true;
     var config = {
       apiKey: "AIzaSyDDa6NB9RLNLuSPzudu0XvJ6yNeiDhYr7I",
       authDomain: "outofstockcs374.firebaseapp.com",
@@ -57,17 +58,20 @@ ul.tabs li.current{
     firebase.initializeApp(config);
     
     window.onload = function() {
-      var sub = document.getElementById("sub");
+      var sub1 = document.getElementById("sub1");
+      var sub2 = document.getElementById("sub2");
       var btn = document.getElementById("btn");
       var link = document.getElementById("link");
       var ntext = document.getElementById("ntext");
+      var oldLink = "";
+      var oldNtext = "";
       
       if(url.indexOf("?") != -1) {
         var keys = url.split("?");
-        if(keys.length != 4) { invalid(); }
-        idpw = keys[1] + '@' + keys[2];
-        if(keys[3].indexOf("=") == -1) { invalid(); }
-        key = keys[3].split("=")[1];
+        if(keys.length != 3) { invalid(); }
+        idpw = keys[1];
+        if(keys[2].indexOf("=") == -1) { invalid(); }
+        key = keys[2].split("=")[1];
         if(key == "") { invalid(); }
         startpage();
       }
@@ -82,6 +86,7 @@ ul.tabs li.current{
         
         $(this).addClass('current');
         $("#"+tab_id).addClass('current');
+        istab1 = tab_id == "tab-1";
       });
       
       function invalid() {
@@ -112,43 +117,51 @@ ul.tabs li.current{
         return firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").once('value', function(snapshot) {
           var myValue = snapshot.val();
           var mykeys = Object.keys(myValue);
-          if(mykeys.length == 2) {
-            ntext.value = myValue["ntext"];
-            link.value = myValue["link"];
-            
-          } else if(mykeys.length == 1) {
-            if(mykeys[0] == "ntext") {
-              ntext.value = myValue["ntext"];
-            } else {
-              link.value = myValue["link"];
-            }
-          } else {
-            ntext.value = "";
-            link.value = "";
+          if(mykeys.length == 3) {
+            oldNtext = myValue["ntext"];
+            oldLink = myValue["link"];
+            istab1 = myValue["istab1"];
           }
-        });
-      }
-      
-      function writeTD() {
-        firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
-          ntext: ntext.value,
-          link: link.value
+          ntext.value = oldNtext;
+          link.value = oldLink;
+          
+          if(istab1 == false) {
+            document.getElementById("tab2").click();
+            btn.click();
+          }
         });
       }
       
       btn.onclick = function() {
         var str = link.value.split("=");
         if(str[0] == "https://www.youtube.com/watch?v") {
-          writeTD();
           document.getElementById("vid").src = "https://www.youtube.com/embed/" + str[1];
         }
         else {
           alert("제대로 된 주소를 입력해주세요.\n예: https://www.youtube.com/watch?v=xxxxxxxxxxx");
         }
       }
-      sub.onclick = function() {
-        writeTD();
-        window.location.href = "./madeCard.html";
+      sub1.onclick = function() {
+        firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
+          ntext: ntext.value,
+          link: oldLink,
+          istab1: istab1
+        });
+        window.location.href = "./madeCard.html?" + idpw;
+      }
+      sub2.onclick = function() {
+        var str = link.value.split("=");
+        if(str[0] == "https://www.youtube.com/watch?v") {
+        firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
+          ntext: oldNtext,
+          link: link.value,
+          istab1: istab1
+        });
+          window.location.href = "./madeCard.html?" + idpw;
+        }
+        else {
+          alert("제대로 된 주소를 입력해주세요.\n예: https://www.youtube.com/watch?v=xxxxxxxxxxx");
+        }
       }
     }
   </script>
@@ -175,15 +188,15 @@ ul.tabs li.current{
   <center>
   <div "width: 1006px;">
     <ul class="tabs">
-      <li class="tab-link current" data-tab="tab-1"> 상세설명 </li>
-      <li class="tab-link" data-tab="tab-2"> 동영상 링크 </li>
+      <li class="tab-link current" id = "tab1" data-tab="tab-1"> 상세설명 </li>
+      <li class="tab-link" id = "tab2" data-tab="tab-2"> 동영상 링크 </li>
     </ul>
     
     <div id = "tab-1" class="tab-content current" style = "width: 1006px;">
       <div style = "height: 25px;"> </div>
       <textarea id = "ntext" placeholder = "자신만의 Wiki를 만들어 보세요." style = "width: 956px; height: 538px; resize: none;"></textarea>
       <div style = "height: 11px;"> </div>
-      <h3"> <a id = "sub" class="btn btn-primary btn-lg" style = "color: white"> &nbsp; 저장 &nbsp; </a> </h3>
+      <h3"> <a id = "sub1" class="btn btn-primary btn-lg" style = "color: white"> &nbsp; 저장 &nbsp; </a> </h3>
       <div style = "height: 17px;"> </div>
     </div>
     
@@ -193,8 +206,9 @@ ul.tabs li.current{
         <iframe id = "vid" width="956" height="538" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <div style = "height: 17px;"> </div>
-      <h3 style = "font-weight: bold;"> 동영상 주소 : &nbsp; <input style = "width: 520px; padding-left: 5px; font-size: large;" type = "text" id = "link" placeholder = "예: https://www.youtube.com/watch?v=xxxxxxxxxxx"> </input>
-      <a id = "btn" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> </h3>
+      <h3 style = "font-weight: bold;"> 동영상 주소 : &nbsp; <input style = "width: 520px; padding-left: 5px; font-size: large;" type = "text" id = "link" placeholder = "예: https://www.youtube.com/watch?v=xxxxxxxxxxx"> </input> &nbsp;
+      <a id = "btn" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> &nbsp;
+      <a id = "sub2" class="btn btn-primary btn-lg" style = "color: white"> 저장 </a> </h3>
       <div style = "height: 5px;"> </div>
     </div>
   </div>
