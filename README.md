@@ -1,2 +1,2 @@
 # POV
-**Restaurant owners** *need* **to promote their ingredients** of menus *because* **customers don't really know how good their ingredients are.**
+Make sure to add a README file that briefly describes the code, e.g., main JavaScript file, or where main feature implementations are, etc. Several lines are enough.
