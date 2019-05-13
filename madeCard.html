@@ -37,16 +37,28 @@
       
       if(url.indexOf("?") != -1) {
         var keys = url.split("?");
-        if(keys.length != 2) { invalid(); }
-        idpw = keys[1];
-        if(idpw.indexOf("#") != -1) {
-          idpw = idpw.split("#")[0];
-        }
+        if(keys.length == 2) {
+          idpw = keys[1];
+          if(idpw.indexOf("#") != -1) {
+            idpw = idpw.split("#")[0];
+          }
+        } else if(keys.length == 3) {
+          idpw = keys[1];
+          if(keys[2].indexOf("page=") == 0) {
+            page = keys[2].split("page=")[1];
+            if(page.indexOf("#") != -1) {
+              page = page.split("#")[0];
+            }
+            page = Number(page);
+          } else { invalid(); }
+        } else { invalid(); }
         startpage();
       }
       else {
         invalid();
       }
+      
+      document.getElementById("toMadeCard").href = "./madeCard.html?" + idpw;
       
       function invalid() {
         alert("비정상적인 접근입니다.");
@@ -76,10 +88,9 @@
         return firebase.database().ref('/').child(idpw).child("card").once('value', function(snapshot) {
           var myValue = snapshot.val();
           cards = Object.keys(myValue);
-          page = parseInt((cards.length - 2) / 6) + 1;
           var cardIndex = cards.length;
-          
-          for(i = 1; i < cardIndex && i <= 6; i++) {
+          var maxp = parseInt((cardIndex - 2) / 6) + 1;
+          for(i = page * 6 - 5; i < cardIndex && i <= page * 6; i++) {
             var currentCard = myValue[cards[cardIndex - i]];
             
             var divcard = document.createElement('div');
@@ -139,7 +150,7 @@
                   var a1 = document.createElement('a');
                   a1.className = "btn btn-primary";
                   a1.href = "./card_explain.html?" + idpw + "?key=card" + String(cardIndex - i);
-                    var itext4 = document.createTextNode("설명 추가");
+                    var itext4 = document.createTextNode("설명 수정");
                   a1.appendChild(itext4);
                 p3.appendChild(a1);
                 p3.appendChild(document.createTextNode(" "));
@@ -152,9 +163,19 @@
               divcb.appendChild(p3);
             divcard.appendChild(divcb);
 
-            var cardId = "c" + String(i);
+            var cardId = "c" + String((i-1)%6+1);
             document.getElementById(cardId).appendChild(divcard);
           }
+          for(i = 1; i <= maxp && i <= 5; i++) {
+            var lid = "#l" + String(i);
+            $(lid).removeClass("disabled");
+            if(i == 1) {
+              $(lid).children()[0].href = "./madeCard.html?" + idpw;
+            } else {
+              $(lid).children()[0].href = "./madeCard.html?" + idpw + "?page=" + String(i);
+            }
+          }
+          $("#l" + String(page)).addClass("active");
         });
       }
     }
@@ -172,7 +193,7 @@
       <div class="collapse navbar-collapse" id="navbar10">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
+          <li class="nav-item"> <a class="nav-link" id = "toMadeCard">카드함</a> </li>
           <li class="nav-item"> <a class="nav-link" href="#">마이페이지</a> </li>
         </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark">로그아웃</a>
       </div>
@@ -187,31 +208,31 @@
           <nav>
             <ul class = "pagination justify-content-start" style = "margin: auto; color: black;">
               <li class = "page-item disabled">
-                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> << </a>
+                <a class = "page-link" style = "font-weight: bold; color:gray"> << </a>
               </li>
               <li class = "page-item disabled">
-                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> < </a>
+                <a class = "page-link" style = "font-weight: bold; color:gray"> < </a>
               </li>
-              <li class = "page-item active">
-                <a class = "page-link" href="#" style = "color:black">1</a>
+              <li class = "page-item disabled" id = "l1">
+                <a class = "page-link" style = "color:black">1</a>
               </li>
-              <li class = "page-item">
-                <a class = "page-link" href="#" style = "color:black">2</a>
+              <li class = "page-item disabled" id = "l2">
+                <a class = "page-link" style = "color:black">2</a>
               </li>
-              <li class = "page-item">
-                <a class = "page-link" href="#" style = "color:black">3</a>
+              <li class = "page-item disabled" id = "l3">
+                <a class = "page-link" style = "color:black">3</a>
               </li>
-              <li class = "page-item">
-                <a class = "page-link" href="#" style = "color:black">4</a>
+              <li class = "page-item disabled" id = "l4">
+                <a class = "page-link" style = "color:black">4</a>
               </li>
-              <li class = "page-item">
-                <a class = "page-link" href="#" style = "color:black">5</a>
+              <li class = "page-item disabled" id = "l5">
+                <a class = "page-link" style = "color:black">5</a>
               </li>
               <li class = "page-item disabled">
-                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> > </a>
+                <a class = "page-link" style = "font-weight: bold; color:gray"> > </a>
               </li>
-              <li class = "page-item">
-                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> >> </a>
+              <li class = "page-item disabled">
+                <a class = "page-link" style = "font-weight: bold; color:gray"> >> </a>
               </li>
               <li class = "page-item">
             </ul>
