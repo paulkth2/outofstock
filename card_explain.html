@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+  <script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
+  
+  <script>
+    var idpw = null;
+    var key = null;
+    var url = window.location.href;
+    var config = {
+      apiKey: "AIzaSyDDa6NB9RLNLuSPzudu0XvJ6yNeiDhYr7I",
+      authDomain: "outofstockcs374.firebaseapp.com",
+      databaseURL: "https://outofstockcs374.firebaseio.com",
+      projectId: "outofstockcs374",
+      storageBucket: "outofstockcs374.appspot.com",
+      messagingSenderId: "825220328740",
+      appId: "1:825220328740:web:7fe1219c00c1ebae"
+    };
+    firebase.initializeApp(config);
+    
+    window.onload = function() {
+      var btn = document.getElementById("btn");
+      var menu = document.getElementById("menu");
+      var ing1 = document.getElementById("ing1");
+      var ing2 = document.getElementById("ing2");
+      var ing3 = document.getElementById("ing3");
+      var text = document.getElementById("text");
+      
+      
+      if(url.indexOf("?") != -1) {
+        var keys = url.split("?");
+        if(keys.length != 4) { invalid(); }
+        idpw = keys[1] + '@' + keys[2];
+        if(keys[3].indexOf("=") == -1) { invalid(); }
+        key = keys[3].split("=")[1];
+        if(key == "") { invalid(); }
+        startpage();
+      }
+      else {
+        invalid();
+      }
+      
+      function invalid() {
+        alert("비정상적인 접근입니다.");
+        history.back();
+      }
+      
+      function startpage() {
+        return firebase.database().ref('/').once('value', function(snapshot) {
+          var myValue = snapshot.val();
+          var idpws = Object.keys(myValue);
+          var valid = false;
+
+          for(var i = 0; i < idpws.length; i++) {
+            if(idpws[i] == idpw) {
+              readFD();
+              valid = true;
+              break;
+            }
+          }
+          if(valid == false) {
+            invalid();
+          }
+        });
+      }
+      
+      function readFD() {
+        return firebase.database().ref('/').child(idpw).child("card").child(key).child("explain").once('value', function(snapshot) {
+          var myValue = snapshot.val();
+          menu.value = myValue["menu"];
+          ing1.value = myValue["ing1"];
+          ing2.value = myValue["ing2"];
+          ing3.value = myValue["ing3"];
+          text.value = myValue["text"];
+        });
+      }
+      
+      function writeTD() {
+        firebase.database().ref('/').child(idpw).child("card").child(key).child("explain").set({
+          menu: menu.value,
+          ing1: ing1.value,
+          ing2: ing2.value,
+          ing3: ing3.value,
+          text: text.value
+        });
+      }
+      
+      btn.onclick = function() {
+        if(menu.value == "") {
+          alert("메뉴를 입력해주세요.");
+          return;
+        }
+        else if(ing1.value == "" && ing2.value == "" && ing3.value == "") {
+          alert("재료를 1개 이상 입력해주세요.");
+          return;
+        }
+        writeTD();
+        if(confirm("세부 설명을 입력하시겠습니까?")) {
+          window.location.href = "./makeWiki.html?" + idpw.split("@")[0] + "?" + idpw.split("@")[1] + "?key=" + key;
+        } else {
+          window.location.href = "./madeCard.html"
+        }
+      }
+    }
+  </script>
+</head>
+
+<body style = "background-color: #AAAAAA;">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container"> <a class="navbar-brand" href="./index.html">
+        <i class="fa d-inline fa-lg fa-stop-circle"></i>
+        <b>Out of Stock Promotions</b>
+      </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar10">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="#">마이페이지</a> </li>
+        </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark">로그아웃</a>
+      </div>
+    </div>
+  </nav>
+
+  <center>
+  <div style = "width: 80%; background-color: white; text-align: left; padding: 12px;">
+    <h1> <a style = "font-weight: bold"> 메뉴: </a> &nbsp; <input id = "menu" type = "text" style = "width: 320px" placeholder = "메뉴 이름"> </input> </h1>
+    <div style = "text-align: left;">
+    <p> <a style = "font-weight: bold"> 재료: </a> &nbsp; <input type = "text" id = "ing1" style = "width: 150px" placeholder = "재료 1"> &nbsp; <input type = "text" id = "ing2" style = "width: 150px" placeholder = "재료 2"> &nbsp; <input type = "text" id = "ing3" style = "width: 150px" placeholder = "재료 3"> </p>
+    <textarea id = "text" placeholder = "설명을 써주세요." style = "width: 100%; height: 500px; resize: none;"></textarea>
+    </div>
+    <div style = "text-align: center;">
+      <a id = "btn" class="btn btn-lg btn-primary mx-1"> 입력 </a>
+    </div> </div>
+  </center>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+</html>

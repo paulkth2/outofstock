@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+  <script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
+  
+  <style>
+ul.tabs{
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+ul.tabs li{
+  background: none;
+  color: #222;
+  display: inline-block;
+  padding: 5px 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: x-large;
+  width: 501px;
+  height: 45px;
+}
+ 
+ul.tabs li.current{
+  background: #ededed;
+  color: #222;
+}
+ 
+.tab-content{
+  display: none;
+  background: #ededed;
+}
+ 
+.tab-content.current{
+  display: inherit;
+}
+  </style>
+  
+  <script>
+    var idpw = null;
+    var key = null;
+    var url = window.location.href;
+    var config = {
+      apiKey: "AIzaSyDDa6NB9RLNLuSPzudu0XvJ6yNeiDhYr7I",
+      authDomain: "outofstockcs374.firebaseapp.com",
+      databaseURL: "https://outofstockcs374.firebaseio.com",
+      projectId: "outofstockcs374",
+      storageBucket: "outofstockcs374.appspot.com",
+      messagingSenderId: "825220328740",
+      appId: "1:825220328740:web:7fe1219c00c1ebae"
+    };
+    firebase.initializeApp(config);
+    
+    window.onload = function() {
+      var sub = document.getElementById("sub");
+      var btn = document.getElementById("btn");
+      var link = document.getElementById("link");
+      var ntext = document.getElementById("ntext");
+      
+      if(url.indexOf("?") != -1) {
+        var keys = url.split("?");
+        if(keys.length != 4) { invalid(); }
+        idpw = keys[1] + '@' + keys[2];
+        if(keys[3].indexOf("=") == -1) { invalid(); }
+        key = keys[3].split("=")[1];
+        if(key == "") { invalid(); }
+        startpage();
+      }
+      else {
+        invalid();
+      }
+      $('ul.tabs li').click(function(){
+        var tab_id = $(this).attr('data-tab');
+         
+        $('ul.tabs li').removeClass('current');
+        $('.tab-content').removeClass('current');
+        
+        $(this).addClass('current');
+        $("#"+tab_id).addClass('current');
+      });
+      
+      function invalid() {
+        alert("비정상적인 접근입니다.");
+        history.back();
+      }
+      
+      function startpage() {
+        return firebase.database().ref('/').once('value', function(snapshot) {
+          var myValue = snapshot.val();
+          var idpws = Object.keys(myValue);
+          var valid = false;
+
+          for(var i = 0; i < idpws.length; i++) {
+            if(idpws[i] == idpw) {
+              readFD();
+              valid = true;
+              break;
+            }
+          }
+          if(valid == false) {
+            invalid();
+          }
+        });
+      }
+      
+      function readFD() {
+        return firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").once('value', function(snapshot) {
+          var myValue = snapshot.val();
+          var mykeys = Object.keys(myValue);
+          if(mykeys.length == 2) {
+            ntext.value = myValue["ntext"];
+            link.value = myValue["link"];
+            
+          } else if(mykeys.length == 1) {
+            if(mykeys[0] == "ntext") {
+              ntext.value = myValue["ntext"];
+            } else {
+              link.value = myValue["link"];
+            }
+          } else {
+            ntext.value = "";
+            link.value = "";
+          }
+        });
+      }
+      
+      function writeTD() {
+        firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
+          ntext: ntext.value,
+          link: link.value
+        });
+      }
+      
+      btn.onclick = function() {
+        var str = link.value.split("=");
+        if(str[0] == "https://www.youtube.com/watch?v") {
+          writeTD();
+          document.getElementById("vid").src = "https://www.youtube.com/embed/" + str[1];
+        }
+        else {
+          alert("제대로 된 주소를 입력해주세요.\n예: https://www.youtube.com/watch?v=xxxxxxxxxxx");
+        }
+      }
+      sub.onclick = function() {
+        writeTD();
+        window.location.href = "./madeCard.html";
+      }
+    }
+  </script>
+</head>
+
+<body style = "background-color: #AAAAAA;">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container"> <a class="navbar-brand" href="./index.html">
+        <i class="fa d-inline fa-lg fa-stop-circle"></i>
+        <b>Out of Stock Promotions</b>
+      </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar10">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="#">마이페이지</a> </li>
+        </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark">로그아웃</a>
+      </div>
+    </div>
+  </nav>
+
+  <center>
+  <div "width: 1006px;">
+    <ul class="tabs">
+      <li class="tab-link current" data-tab="tab-1"> 상세설명 </li>
+      <li class="tab-link" data-tab="tab-2"> 동영상 링크 </li>
+    </ul>
+    
+    <div id = "tab-1" class="tab-content current" style = "width: 1006px;">
+      <div style = "height: 25px;"> </div>
+      <textarea id = "ntext" placeholder = "자신만의 Wiki를 만들어 보세요." style = "width: 956px; height: 538px; resize: none;"></textarea>
+      <div style = "height: 11px;"> </div>
+      <h3"> <a id = "sub" class="btn btn-primary btn-lg" style = "color: white"> &nbsp; 저장 &nbsp; </a> </h3>
+      <div style = "height: 17px;"> </div>
+    </div>
+    
+    <div id = "tab-2" class="tab-content" style = "width: 1006px;">
+      <div style = "height: 25px;"> </div>
+      <div style = "width: 956px; height: 538px; background-color: black; padding: 0px;">
+        <iframe id = "vid" width="956" height="538" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div style = "height: 17px;"> </div>
+      <h3 style = "font-weight: bold;"> 동영상 주소 : &nbsp; <input style = "width: 520px; padding-left: 5px; font-size: large;" type = "text" id = "link" placeholder = "예: https://www.youtube.com/watch?v=xxxxxxxxxxx"> </input>
+      <a id = "btn" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> </h3>
+      <div style = "height: 5px;"> </div>
+    </div>
+  </div>
+  </center>
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+</html>
