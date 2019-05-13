@@ -40,14 +40,19 @@
 					
   				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
   					<span class="navbar-toggler-icon"></span>
-  				</button> <a class="navbar-brand" href="./gallery.html">메뉴 갤러리</a>
+  				</button> <a class="navbar-brand" href="./gallery.html">메뉴 갤러리 &nbsp;&nbsp;&nbsp;&nbsp; 사진 추가하기 </a>
   				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
   					<ul class="navbar-nav">
               <li class="nav-item">
-							 <a class="nav-link" href="#" style="padding-right:150px; font-weight: bold" f>사진 추가</a> <!-- when click upload-->
+								<form enctype="multipart/form-data" action="/upload/image" method="post">
+									<input id="image-file" type="file" /> 
+									<input id="image-name" type="text" placeholder="사진 이름">
+									<button id="submit-button" onclick="submitFile()">업로드</button>
+							</form> <!-- when click upload-->
 						  </li>
-  					</ul>
-  					<form class="form-inline">
+						</ul>
+  					<form class="form-inline" style="align-content:flex-end">
+							이름으로 검색하기
   						<input class="form-control mr-sm-2" type="text"/>
   						<button class="btn btn-primary my-2 my-sm-0" type="submit">
   							Search
@@ -64,17 +69,17 @@
 
   	<div class="row">
   		<div class="col-md-4">
-        <h2 id="name1">Artificial intelligence</h2>
+        <h2 id="name1">사진 없음</h2>
 				<a href="StyleCard.html"><img id="image1" alt="Bootstrap Image Preview" style="width:350px; padding-bottom:10px" src="https://singularityhub.com/wp-content/uploads/2018/06/artificial-intelligence-confusion-719504626-1068x601.jpg"/></a><br>
         <a href="makeRealCard.html"><button class="btn btn-primary my-2 my-sm-0">선택</button></a>
   		</div>
       <div class="col-md-4">
-        <h2 id="name2">Artificial intelligence</h2>
+        <h2 id="name2">사진 없음</h2>
   			<a href="StyleCard.html"><img id="image2" alt="Bootstrap Image Preview" style="width:350px; padding-bottom:10px" src="https://singularityhub.com/wp-content/uploads/2018/06/artificial-intelligence-confusion-719504626-1068x601.jpg"/></a><br>
         <a href="makeRealCard.html"><button class="btn btn-primary my-2 my-sm-0">선택</button></a>
   		</div>
       <div class="col-md-4">
-        <h2 id="name3">Artificial intelligence</h2>
+        <h2 id="name3">사진 없음</h2>
   			<a href="StyleCard.html"><img id="image3" alt="Bootstrap Image Preview" style="width:350px; padding-bottom:10px" src="https://singularityhub.com/wp-content/uploads/2018/06/artificial-intelligence-confusion-719504626-1068x601.jpg"/></a><br>
         <a href="makeRealCard.html"><button class="btn btn-primary my-2 my-sm-0">선택</button></a>
   		</div>
@@ -82,17 +87,17 @@
     <hr>
     <div class="row">
   		<div class="col-md-4">
-        <h2 id="name4">Artificial intelligence</h2>
+        <h2 id="name4">사진 없음</h2>
   			<a href="StyleCard.html"><img id="image4" alt="Bootstrap Image Preview" style="width:350px; padding-bottom:10px" src="https://singularityhub.com/wp-content/uploads/2018/06/artificial-intelligence-confusion-719504626-1068x601.jpg"/></a><br>
         <a href="makeRealCard.html"><button class="btn btn-primary my-2 my-sm-0">선택</button></a>
   		</div>
       <div class="col-md-4">
-        <h2 id="name5">Artificial intelligence</h2>
+        <h2 id="name5">사진 없음</h2>
   			<a href="StyleCard.html"><img id="image5" alt="Bootstrap Image Preview" style="width:350px; padding-bottom:10px" src="https://singularityhub.com/wp-content/uploads/2018/06/artificial-intelligence-confusion-719504626-1068x601.jpg"/></a><br>
         <a href="makeRealCard.html"><button class="btn btn-primary my-2 my-sm-0">선택</button></a>
   		</div>
       <div class="col-md-4">
-        <h2 id="name6">Artificial intelligence</h2>
+        <h2 id="name6">사진 없음</h2>
   			<a href="StyleCard.html"><img id="image6" alt="Bootstrap Image Preview" style="width:350px; padding-bottom:10px" src="https://singularityhub.com/wp-content/uploads/2018/06/artificial-intelligence-confusion-719504626-1068x601.jpg"/></a><br>
         <a href="makeRealCard.html"><button class="btn btn-primary my-2 my-sm-0">선택</button></a>
   		</div>
