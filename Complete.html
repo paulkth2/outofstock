@@ -4,8 +4,48 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+  <script src="./js/logout.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+
+  <script>
+    window.onload = function() {
+      var uid;
+      var key;
+      
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          uid = firebase.auth().currentUser.uid;
+        }
+      });
+      
+      function readFD() {
+        return firebase.database().ref('/').child(uid).child("card").once('value', function(snapshot) {
+          var myValue = snapshot.val();
+          var mykeys = Object.keys(myValue);
+          key = "card" + String(mykeys.length);
+          
+          writeTD();
+        });
+      }
+
+      function writeTD() {
+        firebase.database().ref('/').child(uid).child("card").child(key).child("main_image").set({
+          src: "https://www.einfochips.com/blog/wp-content/uploads/2018/11/how-to-develop-machine-learning-applications-for-business-featured.jpg"
+        });
+        window.location.href = "./card_explain.html?key=" + key;
+      }
+      
+      document.getElementById("upload").onclick = function() {
+        readFD();
+      }
+    }
+  </script>
 </head>
 
 <body style="">
@@ -18,40 +58,21 @@
       </button>
       <div class="collapse navbar-collapse" id="navbar10">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html?myid@mypw">카드 만들기</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="./madeCard.html?myid@mypw">카드함</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
         </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark">로그아웃</a>
       </div>
     </div>
   </nav>
 
   <div class="container-fluid">
-  	<div class="row">
-  		<div class="col-md-4">
-  		</div>
-  		<div class="col-md-4">
-  			<div class="alert alert-success alert-dismissable">
-
-  				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-  					×
-  				</button>
-  				<h4>
-  					만들기 성공!
-  				</h4>  <a href="./card_explain.html?myid@mypw?key=card0" class="alert-link"> 이제 설명을 추가해보세요</a> <br>
-  			</div>
-  		</div>
-  		<div class="col-md-4">
-  		</div>
+  	<div style = "margin-top: 20px; margin-bottom: 20px; text-align: center;">
+          <img alt="Bootstrap Image Preview" src="https://www.einfochips.com/blog/wp-content/uploads/2018/11/how-to-develop-machine-learning-applications-for-business-featured.jpg" width="500"/>
   	</div>
-  	<div class="row">
-  		<div class="col-md-4">
-  		</div>
-  		<div class="col-md-4">
-  			<img alt="Bootstrap Image Preview" src="https://www.einfochips.com/blog/wp-content/uploads/2018/11/how-to-develop-machine-learning-applications-for-business-featured.jpg" width="500"/>
-  		</div>
-  		<div class="col-md-4">
-  		</div>
-  	</div>
+        <div style = "text-align: center;">
+          <h4 style = "font-weight: bold"> 카드 완성! &nbsp; &nbsp;
+          <a class="btn btn-outline-primary btn-lg" id = "upload"> 카드에 설명을 추가해 주세요. </a> </h4>
+        </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

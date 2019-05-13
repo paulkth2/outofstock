@@ -7,72 +7,55 @@
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
   <script src="./js/logout.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
-  <script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
   
   <style>
-ul.tabs{
-  margin: 0px;
-  padding: 0px;
-  list-style: none;
-}
-ul.tabs li{
-  background: none;
-  color: #222;
-  display: inline-block;
-  padding: 5px 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: x-large;
-  width: 501px;
-  height: 45px;
-}
- 
-ul.tabs li.current{
-  background: #ededed;
-  color: #222;
-}
- 
-.tab-content{
-  display: none;
-  background: #ededed;
-}
- 
-.tab-content.current{
-  display: inherit;
-}
-
-.ndisplay {
-  display: none;
-}
-
-.tdisplay {
-  display: inherit;
-}
-
+    ul.tabs{
+      margin: 0px;
+      padding: 0px;
+      list-style: none;
+    }
+    ul.tabs li{
+      background: none;
+      color: #222;
+      display: inline-block;
+      padding: 5px 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: x-large;
+      width: 501px;
+      height: 45px;
+    }
+    ul.tabs li.current{
+      background: #ededed;
+      color: #222;
+    }
+    .tab-content{
+      display: none;
+      background: #ededed;
+    }
+    .tab-content.current{
+      display: inherit;
+    }
+    .ndisplay {
+      display: none;
+    }
+    .tdisplay {
+      display: inherit;
+    }
   </style>
   
   <script>
-    var idpw = null;
     var key = null;
     var url = window.location.href;
     var istab1 = true;
-    var config = {
-      apiKey: "AIzaSyDDa6NB9RLNLuSPzudu0XvJ6yNeiDhYr7I",
-      authDomain: "outofstockcs374.firebaseapp.com",
-      databaseURL: "https://outofstockcs374.firebaseio.com",
-      projectId: "outofstockcs374",
-      storageBucket: "outofstockcs374.appspot.com",
-      messagingSenderId: "825220328740",
-      appId: "1:825220328740:web:7fe1219c00c1ebae"
-    };
-    firebase.initializeApp(config);
     
     window.onload = function() {
+      var uid;
       var sub1 = document.getElementById("sub1");
       var sub2 = document.getElementById("sub2");
       var btn1 = document.getElementById("btn1");
@@ -86,27 +69,22 @@ ul.tabs li.current{
       
       if(url.indexOf("?") != -1) {
         var keys = url.split("?");
-        if(keys.length != 3) { invalid(); }
-        idpw = keys[1];
-        if(keys[2].indexOf("=") == -1) { invalid(); }
-        key = keys[2].split("=")[1];
+        if(keys.length != 2) { invalid(); }
+        if(keys[1].indexOf("key=") != 0) { invalid(); }
+        key = keys[1].split("key=")[1];
         if(key == "") { invalid(); }
         startpage();
       }
       else {
         invalid();
       }
-      
-      document.getElementById("toMadeCard").href = "./madeCard.html?" + idpw;
-      
-      $('ul.tabs li').click(function(){
-        var tab_id = $(this).attr('data-tab');
-         
-        $('ul.tabs li').removeClass('current');
-        $('.tab-content').removeClass('current');
-        
-        $(this).addClass('current');
-        $("#"+tab_id).addClass('current');
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          uid = firebase.auth().currentUser.uid;
+        } else {
+          invalid();
+        }
       });
       
       function invalid() {
@@ -121,7 +99,7 @@ ul.tabs li.current{
           var valid = false;
 
           for(var i = 0; i < idpws.length; i++) {
-            if(idpws[i] == idpw) {
+            if(idpws[i] == uid) {
               readFD();
               valid = true;
               break;
@@ -134,7 +112,7 @@ ul.tabs li.current{
       }
       
       function readFD() {
-        return firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").once('value', function(snapshot) {
+        return firebase.database().ref('/').child(uid).child("card").child(key).child("wiki").once('value', function(snapshot) {
           var myValue = snapshot.val();
           var mykeys = Object.keys(myValue);
           if(mykeys.length == 3) {
@@ -154,23 +132,22 @@ ul.tabs li.current{
       
       btn1.onclick = function() {
         if(isSeen == false) {
-        $("#ptext").removeClass("ndisplay");
-        $("#ptext").addClass("tdisplay");
-        $("#ntext").removeClass("tdisplay");
-        $("#ntext").addClass("ndisplay");
-        $("#ptext").text(ntext.value);
-        $(this).text("수정하기");
-        isSeen = true;
+          $("#ptext").removeClass("ndisplay");
+          $("#ptext").addClass("tdisplay");
+          $("#ntext").removeClass("tdisplay");
+          $("#ntext").addClass("ndisplay");
+          $("#ptext").text(ntext.value);
+          $(this).text("수정하기");
+          isSeen = true;
         } else {
-        $("#ntext").removeClass("ndisplay");
-        $("#ntext").addClass("tdisplay");
-        $("#ptext").removeClass("tdisplay");
-        $("#ptext").addClass("ndisplay");
-        $(this).text("미리보기");
-        isSeen = false;
+          $("#ntext").removeClass("ndisplay");
+          $("#ntext").addClass("tdisplay");
+          $("#ptext").removeClass("tdisplay");
+          $("#ptext").addClass("ndisplay");
+          $(this).text("미리보기");
+          isSeen = false;
         }
       }
-      
       btn2.onclick = function() {
         var str = link.value.split("=");
         if(str[0] == "https://www.youtube.com/watch?v") {
@@ -181,27 +158,37 @@ ul.tabs li.current{
         }
       }
       sub1.onclick = function() {
-        firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
+        firebase.database().ref('/').child(uid).child("card").child(key).child("wiki").set({
           ntext: ntext.value,
           link: oldLink,
           istab1: true
         });
-        window.location.href = "./madeCard.html?" + idpw;
+        window.location.href = "./madeCard.html";
       }
       sub2.onclick = function() {
         var str = link.value.split("=");
         if(str[0] == "https://www.youtube.com/watch?v") {
-        firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
+        firebase.database().ref('/').child(uid).child("card").child(key).child("wiki").set({
           ntext: oldNtext,
           link: link.value,
           istab1: false
         });
-          window.location.href = "./madeCard.html?" + idpw;
+          window.location.href = "./madeCard.html";
         }
         else {
           alert("제대로 된 주소를 입력해주세요.\n예: https://www.youtube.com/watch?v=xxxxxxxxxxx");
         }
       }
+      
+      $('ul.tabs li').click(function(){
+        var tab_id = $(this).attr('data-tab');
+         
+        $('ul.tabs li').removeClass('current');
+        $('.tab-content').removeClass('current');
+        
+        $(this).addClass('current');
+        $("#"+tab_id).addClass('current');
+      });
     }
   </script>
 </head>
@@ -216,8 +203,8 @@ ul.tabs li.current{
       </button>
       <div class="collapse navbar-collapse" id="navbar10">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html?myid@mypw">카드 만들기</a> </li>
-            <li class="nav-item"> <a class="nav-link" id = "toMadeCard">카드함</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
+            <li class="nav-item"> <a class="nav-link" href = "./madeCard.html">카드함</a> </li>
           </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">로그아웃</a>
         </div>
     </div>

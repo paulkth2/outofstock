@@ -4,15 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
-  <script src="./js/logout.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <script src="./js/logout.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
-  <script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
   
   <style>
     .active {
@@ -24,47 +23,31 @@
   </style>
   
   <script>
-    var idpw = null;
     var url = window.location.href;
-    var config = {
-      apiKey: "AIzaSyDDa6NB9RLNLuSPzudu0XvJ6yNeiDhYr7I",
-      authDomain: "outofstockcs374.firebaseapp.com",
-      databaseURL: "https://outofstockcs374.firebaseio.com",
-      projectId: "outofstockcs374",
-      storageBucket: "outofstockcs374.appspot.com",
-      messagingSenderId: "825220328740",
-      appId: "1:825220328740:web:7fe1219c00c1ebae"
-    };
-    firebase.initializeApp(config);
     
     window.onload = function() {
+      var uid;
       var cards = [];
       var page = 1;
       
+      if(url.indexOf("#") != -1) { url = url.split("#")[0]; }
       if(url.indexOf("?") != -1) {
-        var keys = url.split("?");
-        if(keys.length == 2) {
-          idpw = keys[1];
-          if(idpw.indexOf("#") != -1) {
-            idpw = idpw.split("#")[0];
-          }
-        } else if(keys.length == 3) {
-          idpw = keys[1];
-          if(keys[2].indexOf("page=") == 0) {
-            page = keys[2].split("page=")[1];
-            if(page.indexOf("#") != -1) {
-              page = page.split("#")[0];
-            }
-            page = Number(page);
-          } else { invalid(); }
-        } else { invalid(); }
-        startpage();
+        page = url.split("?")[1];
+        if(page.indexOf("page=") == 0) {
+          page = Number(page.split("page=")[1]);
+        }
+        else { invalid(); }
       }
-      else {
-        invalid();
-      }
+      startpage();
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          uid = firebase.auth().currentUser.uid;
+        } else {
+          invalid();
+        }
+      });
       
-      document.getElementById("toMadeCard").href = "./madeCard.html?" + idpw;
       
       function invalid() {
         alert("비정상적인 접근입니다.");
@@ -78,7 +61,7 @@
           var valid = false;
 
           for(var i = 0; i < idpws.length; i++) {
-            if(idpws[i] == idpw) {
+            if(idpws[i] == uid) {
               readFD();
               valid = true;
               break;
@@ -91,12 +74,12 @@
       }
       
       function readFD() {
-        return firebase.database().ref('/').child(idpw).child("card").once('value', function(snapshot) {
+        return firebase.database().ref('/').child(uid).child("card").once('value', function(snapshot) {
           var myValue = snapshot.val();
           cards = Object.keys(myValue);
           var cardIndex = cards.length;
-          var maxp = parseInt((cardIndex - 2) / 6) + 1;
-          for(i = page * 6 - 5; i < cardIndex && i <= page * 6; i++) {
+          var maxp = parseInt((cardIndex - 2) / 3) + 1;
+          for(i = page * 3 - 2; i < cardIndex && i <= page * 3; i++) {
             var currentCard = myValue[cards[cardIndex - i]];
             
             var divcard = document.createElement('div');
@@ -123,7 +106,7 @@
                       }
                       img.style = "width: 15%; height: auto;"
                     imga.appendChild(img);
-                    imga.href = "makeWiki.html?" + idpw + "?key=card" + String(cardIndex - i);
+                    imga.href = "makeWiki.html?key=card" + String(cardIndex - i);
                   idiv2.appendChild(imga);
                 idiv.appendChild(idiv2);
               }
@@ -153,32 +136,40 @@
               divcb.appendChild(p2);
                 var p3 = document.createElement('p');
                 p3.style = "margin-top: 5px;";
-                  var a1 = document.createElement('a');
-                  a1.className = "btn btn-primary";
-                  a1.href = "./card_explain.html?" + idpw + "?key=card" + String(cardIndex - i);
-                    var itext4 = document.createTextNode("설명 수정");
-                  a1.appendChild(itext4);
-                p3.appendChild(a1);
-                p3.appendChild(document.createTextNode(" "));
+                  var a3 = document.createElement('a');
+                  a3.className = "btn btn-danger";
+                  a3.style = "color: white;";
+                  a3.href = "#";
+                    var itext6 = document.createTextNode("삭제(미구현)");
+                  a3.appendChild(itext6);
+                p3.appendChild(a3);
                   var a2 = document.createElement('a');
-                  a2.className = "btn btn-primary";
+                  a2.className = "btn btn-success";
+                  a2.style = "float: right; margin-left: 5px;";
                   a2.href = "./Customers.html";
                     var itext5 = document.createTextNode("보내기");
                   a2.appendChild(itext5);
                 p3.appendChild(a2);
+                  var a1 = document.createElement('a');
+                  a1.className = "btn btn-secondary";
+                  a1.style = "float: right;";
+                  a1.href = "./card_explain.html?key=card" + String(cardIndex - i);
+                    var itext4 = document.createTextNode("설명 수정");
+                  a1.appendChild(itext4);
+                p3.appendChild(a1);
               divcb.appendChild(p3);
             divcard.appendChild(divcb);
 
-            var cardId = "c" + String((i-1)%6+1);
+            var cardId = "c" + String((i-1)%3+1);
             document.getElementById(cardId).appendChild(divcard);
           }
           for(i = 1; i <= maxp && i <= 5; i++) {
             var lid = "#l" + String(i);
             $(lid).removeClass("disabled");
             if(i == 1) {
-              $(lid).children()[0].href = "./madeCard.html?" + idpw;
+              $(lid).children()[0].href = "./madeCard.html";
             } else {
-              $(lid).children()[0].href = "./madeCard.html?" + idpw + "?page=" + String(i);
+              $(lid).children()[0].href = "./madeCard.html?page=" + String(i);
             }
           }
           $("#l" + String(page)).addClass("active");
@@ -198,8 +189,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbar10">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html?myid@mypw">카드 만들기</a> </li>
-            <li class="nav-item"> <a class="nav-link" id = "toMadeCard" href="./madeCard.html">카드함</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
           </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">로그아웃</a>
         </div>
     </div>
@@ -259,18 +250,6 @@
           <div class = "col-md-4" id = "c2">
           </div>
           <div class = "col-md-4" id = "c3">
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class = "row" style = "padding-top:5px; padding-bottom: 5px;">
-      <div class = "col-md-12">
-        <div class = "row">
-          <div class = "col-md-4" id = "c4">
-          </div>
-          <div class = "col-md-4" id = "c5">
-          </div>
-          <div class = "col-md-4" id = "c6">
           </div>
         </div>
       </div>
