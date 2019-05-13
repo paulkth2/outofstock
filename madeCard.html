@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+  <script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
+  
+  <style>
+    .active {
+      pointer-events: none;
+    }
+    .disabled {
+      background-color: gray;
+    }
+  </style>
+  
+  <script>
+    var idpw = null;
+    var url = window.location.href;
+    var config = {
+      apiKey: "AIzaSyDDa6NB9RLNLuSPzudu0XvJ6yNeiDhYr7I",
+      authDomain: "outofstockcs374.firebaseapp.com",
+      databaseURL: "https://outofstockcs374.firebaseio.com",
+      projectId: "outofstockcs374",
+      storageBucket: "outofstockcs374.appspot.com",
+      messagingSenderId: "825220328740",
+      appId: "1:825220328740:web:7fe1219c00c1ebae"
+    };
+    firebase.initializeApp(config);
+    
+    window.onload = function() {
+      var cards = [];
+      var page = 1;
+      
+      if(url.indexOf("?") != -1) {
+        var keys = url.split("?");
+        if(keys.length != 2) { invalid(); }
+        idpw = keys[1];
+        if(idpw.indexOf("#") != -1) {
+          idpw = idpw.split("#")[0];
+        }
+        startpage();
+      }
+      else {
+        invalid();
+      }
+      
+      function invalid() {
+        alert("비정상적인 접근입니다.");
+        history.back();
+      }
+      
+      function startpage() {
+        return firebase.database().ref('/').once('value', function(snapshot) {
+          var myValue = snapshot.val();
+          var idpws = Object.keys(myValue);
+          var valid = false;
+
+          for(var i = 0; i < idpws.length; i++) {
+            if(idpws[i] == idpw) {
+              readFD();
+              valid = true;
+              break;
+            }
+          }
+          if(valid == false) {
+            invalid();
+          }
+        });
+      }
+      
+      function readFD() {
+        return firebase.database().ref('/').child(idpw).child("card").once('value', function(snapshot) {
+          var myValue = snapshot.val();
+          cards = Object.keys(myValue);
+          page = parseInt((cards.length - 2) / 6) + 1;
+          var cardIndex = cards.length;
+          
+          for(i = 1; i < cardIndex && i <= 6; i++) {
+            var currentCard = myValue[cards[cardIndex - i]];
+            
+            var divcard = document.createElement('div');
+            divcard.className = "card";
+              var idiv = document.createElement('div');
+              idiv.style = "width: 100%; height: auto; text-align: right;";
+                var idiv1 = document.createElement('div');
+                idiv1.style = "width: 100%; height: auto; position: relative;";
+                  var mimage = document.createElement('img');
+                  mimage.className = "card-img-top";
+                  mimage.src = currentCard["main_image"]["src"];
+                idiv1.appendChild(mimage);
+              idiv.appendChild(idiv1);
+              
+              if(currentCard["wiki"] != undefined) {
+                var idiv2 = document.createElement('div');
+                  idiv2.style = "width: 100%; height: auto; position: absolute; top: 0px;";
+                    var imga = document.createElement('a');
+                      var img = document.createElement('img');
+                      if(currentCard["wiki"]["istab1"]) {
+                        img.src = "https://cdn.pixabay.com/photo/2013/06/07/09/53/notepad-117597__340.png";
+                      } else {
+                        img.src = "https://cdn.pixabay.com/photo/2016/07/03/18/36/youtube-1495277_1280.png";
+                      }
+                      img.style = "width: 15%; height: auto;"
+                    imga.appendChild(img);
+                    imga.href = "makeWiki.html?" + idpw + "?key=card" + String(cardIndex - i);
+                  idiv2.appendChild(imga);
+                idiv.appendChild(idiv2);
+              }
+            divcard.appendChild(idiv);
+              var divcb = document.createElement('div');
+              divcb.className = "card-block";
+              divcb.style = "padding: 10px; padding-bottom: 0px";
+                var h5 = document.createElement('h5');
+                h5.className = "card-title";
+                h5.style = "font-weight: bold;";
+                  var itext1 = document.createTextNode(currentCard["explain"]["menu"]);
+                h5.appendChild(itext1);
+              divcb.appendChild(h5);
+                var p1 = document.createElement('p');
+                p1.className = "card-text";
+                p1.style = "font-weight: bold;";
+                  var itext2 = document.createTextNode("재료 : " + currentCard["explain"]["ing1"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing2"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing3"]);
+                p1.appendChild(itext2);
+              divcb.appendChild(p1);
+                var p2 = document.createElement('div');
+                p2.style = "max-height: 264px; overflow: hidden;";
+                  var extext = currentCard["explain"]["text"].split("\n");
+                for(j = 0; j < extext.length; j++) {
+                  p2.appendChild(document.createTextNode(extext[j]));
+                  p2.appendChild(document.createElement('br'));
+                }
+              divcb.appendChild(p2);
+                var p3 = document.createElement('p');
+                p3.style = "margin-top: 5px;";
+                  var a1 = document.createElement('a');
+                  a1.className = "btn btn-primary";
+                  a1.href = "./card_explain.html?" + idpw + "?key=card" + String(cardIndex - i);
+                    var itext4 = document.createTextNode("설명 추가");
+                  a1.appendChild(itext4);
+                p3.appendChild(a1);
+                p3.appendChild(document.createTextNode(" "));
+                  var a2 = document.createElement('a');
+                  a2.className = "btn btn-primary";
+                  a2.href = "./Customers.html";
+                    var itext5 = document.createTextNode("보내기");
+                  a2.appendChild(itext5);
+                p3.appendChild(a2);
+              divcb.appendChild(p3);
+            divcard.appendChild(divcb);
+
+            var cardId = "c" + String(i);
+            document.getElementById(cardId).appendChild(divcard);
+          }
+        });
+      }
+    }
+  </script>
+</head>
+
+<body style="">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container"> <a class="navbar-brand" href="./index.html">
+        <i class="fa d-inline fa-lg fa-stop-circle"></i>
+        <b>Out of Stock Promotions</b>
+      </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar10">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="#">마이페이지</a> </li>
+        </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark">로그아웃</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <nav class = "navbar navbar-expand-lg navbar-light bg-light justify-content-between" style = "width: 100%; text-align: right;">
+          <nav>
+            <ul class = "pagination justify-content-start" style = "margin: auto; color: black;">
+              <li class = "page-item disabled">
+                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> << </a>
+              </li>
+              <li class = "page-item disabled">
+                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> < </a>
+              </li>
+              <li class = "page-item active">
+                <a class = "page-link" href="#" style = "color:black">1</a>
+              </li>
+              <li class = "page-item">
+                <a class = "page-link" href="#" style = "color:black">2</a>
+              </li>
+              <li class = "page-item">
+                <a class = "page-link" href="#" style = "color:black">3</a>
+              </li>
+              <li class = "page-item">
+                <a class = "page-link" href="#" style = "color:black">4</a>
+              </li>
+              <li class = "page-item">
+                <a class = "page-link" href="#" style = "color:black">5</a>
+              </li>
+              <li class = "page-item disabled">
+                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> > </a>
+              </li>
+              <li class = "page-item">
+                <a class = "page-link" href="#" style = "font-weight: bold; color:gray"> >> </a>
+              </li>
+              <li class = "page-item">
+            </ul>
+          </nav>
+          <form class="form-inline">
+            <input class = "form-control mr-sm-2" style = "width: 200px; margin: auto;" type = "text"> </input>
+            <a class = "btn btn-primary" href = "#">
+              찾기
+            </a>
+          </form>
+        </nav>
+      </div>
+    </div>
+    <div class = "row" style = "padding-top:5px; padding-bottom: 5px;">
+      <div class = "col-md-12">
+        <div class = "row">
+          <div class = "col-md-4" id = "c1">
+          </div>
+          <div class = "col-md-4" id = "c2">
+          </div>
+          <div class = "col-md-4" id = "c3">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class = "row" style = "padding-top:5px; padding-bottom: 5px;">
+      <div class = "col-md-12">
+        <div class = "row">
+          <div class = "col-md-4" id = "c4">
+          </div>
+          <div class = "col-md-4" id = "c5">
+          </div>
+          <div class = "col-md-4" id = "c6">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+</html>
