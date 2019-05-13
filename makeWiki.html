@@ -39,6 +39,15 @@ ul.tabs li.current{
 .tab-content.current{
   display: inherit;
 }
+
+.ndisplay {
+  display: none;
+}
+
+.tdisplay {
+  display: inherit;
+}
+
   </style>
   
   <script>
@@ -60,9 +69,12 @@ ul.tabs li.current{
     window.onload = function() {
       var sub1 = document.getElementById("sub1");
       var sub2 = document.getElementById("sub2");
-      var btn = document.getElementById("btn");
+      var btn1 = document.getElementById("btn1");
+      var btn2 = document.getElementById("btn2");
       var link = document.getElementById("link");
       var ntext = document.getElementById("ntext");
+      var istab1 = true;
+      var isSeen = false;
       var oldLink = "";
       var oldNtext = "";
       
@@ -78,6 +90,9 @@ ul.tabs li.current{
       else {
         invalid();
       }
+      
+      document.getElementById("toMadeCard").href = "./madeCard.html?" + idpw;
+      
       $('ul.tabs li').click(function(){
         var tab_id = $(this).attr('data-tab');
          
@@ -86,7 +101,6 @@ ul.tabs li.current{
         
         $(this).addClass('current');
         $("#"+tab_id).addClass('current');
-        istab1 = tab_id == "tab-1";
       });
       
       function invalid() {
@@ -127,12 +141,31 @@ ul.tabs li.current{
           
           if(istab1 == false) {
             document.getElementById("tab2").click();
-            btn.click();
+            btn2.click();
           }
         });
       }
       
-      btn.onclick = function() {
+      btn1.onclick = function() {
+        if(isSeen == false) {
+        $("#ptext").removeClass("ndisplay");
+        $("#ptext").addClass("tdisplay");
+        $("#ntext").removeClass("tdisplay");
+        $("#ntext").addClass("ndisplay");
+        $("#ptext").text(ntext.value);
+        $(this).text("수정하기");
+        isSeen = true;
+        } else {
+        $("#ntext").removeClass("ndisplay");
+        $("#ntext").addClass("tdisplay");
+        $("#ptext").removeClass("tdisplay");
+        $("#ptext").addClass("ndisplay");
+        $(this).text("미리보기");
+        isSeen = false;
+        }
+      }
+      
+      btn2.onclick = function() {
         var str = link.value.split("=");
         if(str[0] == "https://www.youtube.com/watch?v") {
           document.getElementById("vid").src = "https://www.youtube.com/embed/" + str[1];
@@ -145,7 +178,7 @@ ul.tabs li.current{
         firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
           ntext: ntext.value,
           link: oldLink,
-          istab1: istab1
+          istab1: true
         });
         window.location.href = "./madeCard.html?" + idpw;
       }
@@ -155,7 +188,7 @@ ul.tabs li.current{
         firebase.database().ref('/').child(idpw).child("card").child(key).child("wiki").set({
           ntext: oldNtext,
           link: link.value,
-          istab1: istab1
+          istab1: false
         });
           window.location.href = "./madeCard.html?" + idpw;
         }
@@ -178,7 +211,7 @@ ul.tabs li.current{
       <div class="collapse navbar-collapse" id="navbar10">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
+          <li class="nav-item"> <a class="nav-link"id = "toMadeCard">카드함</a> </li>
           <li class="nav-item"> <a class="nav-link" href="#">마이페이지</a> </li>
         </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark">로그아웃</a>
       </div>
@@ -194,8 +227,10 @@ ul.tabs li.current{
     
     <div id = "tab-1" class="tab-content current" style = "width: 1006px;">
       <div style = "height: 25px;"> </div>
-      <textarea id = "ntext" placeholder = "자신만의 Wiki를 만들어 보세요." style = "width: 956px; height: 538px; resize: none;"></textarea>
+      <pre id = "ptext" class = "ndisplay" style = "width: 956px; min-height: 544px; text-align: left; margin-bottom: 0px; padding-top: 5px; padding-left: 2px; font-size: 16px; border: 1px solid black; background-color: #f8f8f8;"></pre>
+      <textarea id = "ntext" class = "tdisplay" placeholder = "자신만의 Wiki를 만들어 보세요." style = "width: 956px; height: 544px; resize: none;"></textarea>
       <div style = "height: 11px;"> </div>
+      <a id = "btn1" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> &nbsp;
       <h3"> <a id = "sub1" class="btn btn-primary btn-lg" style = "color: white"> &nbsp; 저장 &nbsp; </a> </h3>
       <div style = "height: 17px;"> </div>
     </div>
@@ -207,7 +242,7 @@ ul.tabs li.current{
       </div>
       <div style = "height: 17px;"> </div>
       <h3 style = "font-weight: bold;"> 동영상 주소 : &nbsp; <input style = "width: 520px; padding-left: 5px; font-size: large;" type = "text" id = "link" placeholder = "예: https://www.youtube.com/watch?v=xxxxxxxxxxx"> </input> &nbsp;
-      <a id = "btn" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> &nbsp;
+      <a id = "btn2" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> &nbsp;
       <a id = "sub2" class="btn btn-primary btn-lg" style = "color: white"> 저장 </a> </h3>
       <div style = "height: 5px;"> </div>
     </div>

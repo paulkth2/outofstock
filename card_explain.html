@@ -45,6 +45,8 @@
         invalid();
       }
       
+      document.getElementById("toMadeCard").href = "./madeCard.html?" + idpw;
+      
       function invalid() {
         alert("비정상적인 접근입니다.");
         history.back();
@@ -100,7 +102,7 @@
           return;
         }
         writeTD();
-        if(confirm("세부 설명을 입력하시겠습니까?")) {
+        if(confirm("상세 설명을 입력하시겠습니까?")) {
           window.location.href = "./makeWiki.html?" + idpw + "?key=" + key;
         } else {
           window.location.href = "./madeCard.html?" + idpw;
@@ -121,7 +123,7 @@
       <div class="collapse navbar-collapse" id="navbar10">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
+          <li class="nav-item"> <a class="nav-link" id = "toMadeCard">카드함</a> </li>
           <li class="nav-item"> <a class="nav-link" href="#">마이페이지</a> </li>
         </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark">로그아웃</a>
       </div>

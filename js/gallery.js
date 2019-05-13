@@ -18,6 +18,7 @@ var storageRef = firebase.storage().ref();
 
 var uid = ""
 
+
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       // User is signed in.
@@ -26,6 +27,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       // No user is signed in.
     }
   });
+  
 
 function writeNewPost(uid, username, picture, title, body) {
     // A post entry.
