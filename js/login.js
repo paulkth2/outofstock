@@ -12,48 +12,66 @@ firebase.initializeApp(firebaseConfig);
 
 var database = firebase.database();
 
+function register(){
+  var email = document.getElementById("emailinput").value;
+  var password = document.getElementById("passwordinput").value;
+  console.log("check1");
+  console.log(email);
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+  .then(function(user){
+    var storename = document.getElementById("storename").value;
+    var phonenum = document.getElementById("phonenum").value;
+    var address = document.getElementById("address").value;
+    var opertime = document.getElementById("opertime").value;
+    console.log("check2");
+    console.log(user.user.uid);
+    firebase.database().ref('/'+user.user.uid).set({
+      info: {"storename":storename,
+      "phonenum":phonenum, "address":address, "opertime":opertime},
+      card: {"card0":"default"},
+    });
+
+    document.getElementById("emailinput").value = "";
+    document.getElementById("passwordinput").value = "";
+    document.getElementById("storename").value = "";
+    document.getElementById("phonenum").value = "";
+    document.getElementById("address").value = "";
+    document.getElementById("opertime").value = "";
+    console.log("check3");
+  }).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // ...
+
+    console.log(errorMessage);
+  });
+}
+
+
+/*
+* working UI part of code
+*
 var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
 var uiConfig = {
     callbacks: {
       signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-        // User successfully signed in.
-        // Return type determines whether we continue the redirect automatically
-        // or whether we leave that to developer to handle.
         return true;
       },
       uiShown: function() {
-        // The widget is rendered.
-        // Hide the loader.
-       // document.getElementById('loader').style.display = visible;
       }
     },
-    // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
     signInFlow: 'popup',
     signInSuccessUrl: './makecard.html',
     signInOptions: [
-      // Leave the lines as is for the providers you want to offer your users.
       firebase.auth.EmailAuthProvider.PROVIDER_ID
     ],
-    // Terms of service url.
     tosUrl: '#',
-    // Privacy policy url.
     privacyPolicyUrl: '#'
   };
 
-/*
-ui.start('#firebaseui-auth-container', {
-    signInOptions: [
-      {
-        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
-      }
-    ],
-    // Other config options...
-  });
-*/
 
-
-
-// The start method will wait until the DOM is loaded.
 ui.start('#firebaseui-auth-container', uiConfig);
+
+*/
