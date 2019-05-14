@@ -37,6 +37,15 @@
     };
     firebase.initializeApp(config);
     
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in.
+        idpw = firebase.auth().currentUser.uid;
+      } else {
+        // No user is signed in.
+      }
+    });
+
     window.onload = function() {
       var cards = [];
       var page = 1;
