@@ -16,7 +16,7 @@
 
 <body style="">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-    <div class="container"> <a class="navbar-brand" href="./index.html">
+    <div class="container"> <a class="navbar-brand" href="./makecard.html">
         <i class="fa d-inline fa-lg fa-stop-circle"></i>
         <b>Out of Stock Promotions</b>
       </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
@@ -53,7 +53,7 @@
     				<thead>
     					<tr>
     						<th>
-    							<input type="checkbox">
+    							<input class="checkall" type="checkbox">
     						</th>
     						<th>
     							Recommended Food
@@ -69,12 +69,12 @@
     				<tbody>
               <tr class="table-danger">
     						<td>
-    							<input type="checkbox">
+    							<input id="rec_0" class="check" type="checkbox">
     						</td>
     						<td>
     							(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     							(628)xxx-xxxx
     						</td>
     						<td>
@@ -83,12 +83,12 @@
     					</tr>
     					<tr class="table-warning">
     						<td>
-    							<input type="checkbox">
+    							<input id="rec_1" class="check" type="checkbox">
     						</td>
     						<td>
     							(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     							(201)xxx-xxxx
     						</td>
     						<td>
@@ -97,12 +97,12 @@
     					</tr>
     					<tr class="table-warning">
     						<td>
-    							<input type="checkbox">
+    							<input id="rec_2" class="check" type="checkbox">
     						</td>
     						<td>
     							(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     							(628)xxx-xxxx
     						</td>
     						<td>
@@ -120,7 +120,7 @@
     				<thead>
     					<tr>
     						<th>
-    							<input type="checkbox">
+    							<input class="checkall" type="checkbox">
     						</th>
     						<th>
     							Recommended Food
@@ -136,12 +136,12 @@
     				<tbody>
     					<tr>
     						<td>
-    							<input type="checkbox">
+    							<input id="reg_0" class="check" type="checkbox">
     						</td>
     						<td>
     						(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     							(628)xxx-xxxx
     						</td>
     						<td>
@@ -150,12 +150,12 @@
     					</tr>
     					<tr>
     						<td>
-    							<input type="checkbox">
+    							<input id="reg_1" class="check" type="checkbox">
     						</td>
     						<td>
     							(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     							(628)xxx-xxxx
     						</td>
     						<td>
@@ -164,12 +164,12 @@
     					</tr>
     					<tr>
     						<td>
-    							<input type="checkbox">
+    							<input id="reg_2" class="check" type="checkbox">
     						</td>
     						<td>
     							(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     						(628)xxx-xxxx
     						</td>
     						<td>
@@ -178,12 +178,12 @@
     					</tr>
     					<tr>
     						<td>
-    							<input type="checkbox">
+    							<input id="reg_3" class="check" type="checkbox">
     						</td>
     						<td>
     							(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     							(628)xxx-xxxx
     						</td>
     						<td>
@@ -192,12 +192,12 @@
     					</tr>
     					<tr>
     						<td>
-    							<input type="checkbox">
+    							<input id="reg_4" class="check" type="checkbox">
     						</td>
     						<td>
     							(FOOD)
     						</td>
-    						<td>
+    						<td class="address">
     						(628)xxx-xxxx
     						</td>
     						<td>
@@ -218,8 +218,8 @@
       </div>
       <div class="row">
     		<div class="col-md-12">
-          <a href="./Complete_sending.html">
-    			<button type="button" class="btn btn-success">
+          <a href="#.html">
+    			<button type="button" class="btn btn-success btn-send">
     				보내기
     			</button></a>
     		</div>
@@ -230,6 +230,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="./js/Send.js"></script>
 </body>
 
 </html>

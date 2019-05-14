@@ -13,6 +13,25 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
   
+  <style>
+    #mask {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index:1;
+      background-color: rgba(0,0,0,0.2);
+      display: none;
+    }
+    #popGuide {
+      display: none;
+      position: absolute;
+      z-index: 2;
+      float: center;
+      background: #ededed;
+      text-align: left"
+    }
+  </style>
+  
   <script>
     var key = null;
     var url = window.location.href;
@@ -47,6 +66,9 @@
           invalid();
         }
       });
+      
+      $("#mask").css({'width': $(document).width(), 'height': $(document).height()});
+      $("#popGuide").css({'left': $(document).width()/2 - $("#popGuide").width()/2, 'top': $(document).height()/2 - $("#popGuide").height()/2 + 20});
       
       function invalid() {
         alert("비정상적인 접근입니다.");
@@ -117,6 +139,17 @@
         writeTD();
         window.location.href = "./madeCard.html"
       }
+      
+      $("#guideBtn").click(function() {
+        $("#popGuide").show();
+        $("#mask").show();
+        return false;
+      });
+      $("#popGuide > button").click(function() {
+        $("#popGuide").hide();
+        $("#mask").hide();
+        return false;
+      });
     }
   </script>
 </head>
@@ -137,17 +170,27 @@
       </div>
     </div>
   </nav>
+  
+  <div id = "popGuide">
+    <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+    <div></div>
+    <img src="./pictures/guide2.png" style = "width: 1000px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
+  </div>
+  
+  <div id = "mask"></div>
 
   <center>
-  <div style = "width: 600px; background-color: white; text-align: left; padding: 12px;">
-    <h1> <a style = "font-weight: bold;"> 메뉴: </a> &nbsp; <input id = "menu" type = "text" style = "width: 420px;" placeholder = "메뉴 이름"> </input> </h1>
-    <div style = "text-align: left; padding-top: 10px;">
+  <div style = "position: relative; width: 600px; background-color: white; text-align: left; padding: 12px;">
+    <h2> <a style = "font-weight: bold;"> 메뉴: </a> &nbsp; <input id = "menu" type = "text" style = "width: 360px;" placeholder = "메뉴 이름"> </input> 
+         <button id = "guideBtn" class="btn btn-dark btn-lg" style = "margin-left: 8px; margin-bottom: 10px;"> 가이드 </button> 
+    </h2>
+    <div style = "text-align: left;">
     <p> <a style = "font-weight: bold"> 재료: </a> &nbsp; <input type = "text" id = "ing1" style = "width: 150px" placeholder = "재료 1"> &nbsp; <input type = "text" id = "ing2" style = "width: 150px" placeholder = "재료 2"> &nbsp; <input type = "text" id = "ing3" style = "width: 150px" placeholder = "재료 3"> </p>
     <textarea id = "text" placeholder = "설명을 써주세요." style = "width: 574px; height: 480px; margin-bottom: 10px; padding-left: 5px; resize: none; font-size: 20px"></textarea>
     </div>
-    <div style = "text-align: center; color: white;">
-      <a id = "btn1" class="btn btn-lg btn-success mx-1"> 상세 설명 쓰기 </a>
-      <a id = "btn2" class="btn btn-lg btn-primary mx-1"> 저장 후 카드함 </a>
+    <div style = "text-align: center; color: white; margin-top: 1px; margin-bottom: 5px;">
+      <a id = "btn1" class="btn btn-lg btn-success mx-1" style="cursor:pointer"> 상세 설명 쓰기 </a>
+      <a id = "btn2" class="btn btn-lg btn-primary mx-1" style="cursor:pointer"> 저장 후 카드함 </a>
     </div> </div>
   </center>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
