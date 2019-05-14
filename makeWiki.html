@@ -47,6 +47,34 @@
     .tdisplay {
       display: inherit;
     }
+    .btn {
+      cursor:pointer;
+    }
+    
+    #mask {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index:1;
+      background-color: rgba(0,0,0,0.5);
+      display: none;
+    }
+    #popGuide1 {
+      display: none;
+      position: absolute;
+      z-index: 2;
+      float: center;
+      background: #ededed;
+      text-align: left"
+    }
+    #popGuide2 {
+      display: none;
+      position: absolute;
+      z-index: 2;
+      float: center;
+      background: #ededed;
+      text-align: left"
+    }
   </style>
   
   <script>
@@ -86,6 +114,10 @@
           invalid();
         }
       });
+      
+      $("#mask").css({'width': $(document).width(), 'height': $(document).height()});
+      $("#popGuide1").css({'left': $(document).width()/2 - $("#popGuide1").width()/2, 'top': $(document).height()/2 - $("#popGuide1").height()/2});
+      $("#popGuide2").css({'left': $(document).width()/2 - $("#popGuide2").width()/2, 'top': $(document).height()/2 - $("#popGuide2").height()/2});
       
       function invalid() {
         alert("비정상적인 접근입니다.");
@@ -188,6 +220,28 @@
         
         $(this).addClass('current');
         $("#"+tab_id).addClass('current');
+        $("#guide"+tab_id).addClass('current');
+      });
+      
+      $("#guidetab-1").click(function() {
+        $("#popGuide1").show();
+        $("#mask").show();
+        return false;
+      });
+      $("#popGuide1 > button").click(function() {
+        $("#popGuide1").hide();
+        $("#mask").hide();
+        return false;
+      });
+      $("#guidetab-2").click(function() {
+        $("#popGuide2").show();
+        $("#mask").show();
+        return false;
+      });
+      $("#popGuide2 > button").click(function() {
+        $("#popGuide2").hide();
+        $("#mask").hide();
+        return false;
       });
     }
   </script>
@@ -209,15 +263,29 @@
         </div>
     </div>
   </nav>
+  
+  <div id = "popGuide1">
+    <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+    <div></div>
+    <img src="./pictures/guide3.png" style = "width: 1000px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
+  </div>
+  <div id = "popGuide2">
+    <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+    <div></div>
+    <img src="./pictures/guide4.png" style = "width: 1000px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
+  </div>
+  <div id = "mask"></div>
+
 
   <center>
   <div "width: 1006px;">
-    <ul class="tabs">
-      <li class="tab-link current" id = "tab1" data-tab="tab-1"> 상세설명 </li>
-      <li class="tab-link" id = "tab2" data-tab="tab-2"> 동영상 링크 </li>
+    <ul class="tabs"">
+      <li class="tab-link current" id = "tab1" data-tab="tab-1" style = "position: relative;"> 상세설명 <button id = "guidetab-1" class="btn btn-dark tab-content current" style = "background-color: black; position: absolute; left: 400px;"> 가이드 </button> </li>
+      <li class="tab-link" id = "tab2" data-tab="tab-2" style = "position: relative;"> 동영상 링크 <button id = "guidetab-2" class="btn btn-dark tab-content" style = "background-color: black; position: absolute; left: 400px;"> 가이드 </button> </li>
     </ul>
     
     <div id = "tab-1" class="tab-content current" style = "width: 1006px;">
+      
       <div style = "height: 25px;"> </div>
       <pre id = "ptext" class = "ndisplay" style = "width: 956px; min-height: 544px; text-align: left; margin-bottom: 0px; padding-top: 5px; padding-left: 2px; font-size: 16px; border: 1px solid black; background-color: #f8f8f8;"></pre>
       <textarea id = "ntext" class = "tdisplay" placeholder = "자신만의 Wiki를 만들어 보세요." style = "width: 956px; height: 544px; resize: none;"></textarea>

@@ -17,9 +17,6 @@
     .active {
       pointer-events: none;
     }
-    .disabled {
-      background-color: gray;
-    }
     #mask {
       position: absolute;
       left: 0;
@@ -30,10 +27,6 @@
     }
     #popGuide {
       display: none;
-      width: 800px;
-      height: 400px;
-      padding: 20px;
-      border: 3px solid black;
       position: absolute;
       z-index: 2;
       float: center;
@@ -67,8 +60,9 @@
           invalid();
         }
       });
+      
       $("#mask").css({'width': $(document).width(), 'height': $(document).height()});
-      $("#popGuide").css({'left': $(document).width()/2 - 400, 'top': $(document).height()/2 - 200});
+      $("#popGuide").css({'left': $(document).width()/2 - $("#popGuide").width()/2, 'top': $(document).height()/2 - $("#popGuide").height()/2});
       
       function invalid() {
         alert("비정상적인 접근입니다.");
@@ -187,6 +181,7 @@
           for(i = 1; i <= maxp && i <= 5; i++) {
             var lid = "#l" + String(i);
             $(lid).removeClass("disabled");
+            $(lid).children()[0].style += {'background': 'white'};
             if(i == 1) {
               $(lid).children()[0].href = "./madeCard.html";
             } else {
@@ -229,8 +224,9 @@
   </nav>
   
   <div id = "popGuide">
-    가이드
-    <button class="btn btn-link"> 닫기 </button>
+    <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+    <div></div>
+    <img src="./pictures/guide1.png" style = "width: 500px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
   </div>
 
   <div id = "mask"></div>
@@ -245,39 +241,38 @@
           <nav>
             <ul class = "pagination justify-content-start" style = "margin: auto; color: black;">
               <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray"> << </a>
+                <a class = "page-link" style = "font-weight: bold; color:gray; background: #ddd;"> << </a>
               </li>
               <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray"> < </a>
+                <a class = "page-link" style = "font-weight: bold; color:gray; background: #ddd;"> < </a>
               </li>
               <li class = "page-item disabled" id = "l1">
-                <a class = "page-link" style = "color:black">1</a>
+                <a class = "page-link" style = "color:black"; background: #ddd;>1</a>
               </li>
               <li class = "page-item disabled" id = "l2">
-                <a class = "page-link" style = "color:black">2</a>
+                <a class = "page-link" style = "color:black; background: #ddd;">2</a>
               </li>
               <li class = "page-item disabled" id = "l3">
-                <a class = "page-link" style = "color:black">3</a>
+                <a class = "page-link" style = "color:black; background: #ddd;">3</a>
               </li>
               <li class = "page-item disabled" id = "l4">
-                <a class = "page-link" style = "color:black">4</a>
+                <a class = "page-link" style = "color:black; background: #ddd;">4</a>
               </li>
               <li class = "page-item disabled" id = "l5">
-                <a class = "page-link" style = "color:black">5</a>
+                <a class = "page-link" style = "color:black; background: #ddd;">5</a>
               </li>
               <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray"> > </a>
+                <a class = "page-link" style = "font-weight: bold; color:gray; background: #dddddd;"> > </a>
               </li>
               <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray"> >> </a>
+                <a class = "page-link" style = "font-weight: bold; color:gray; background: #dddddd;"> >> </a>
               </li>
-              <li class = "page-item">
             </ul>
           </nav>
           <form class="form-inline">
             <input class = "form-control mr-sm-2" style = "width: 200px; margin: auto;" type = "text"> </input>
             <a class = "btn btn-primary" href = "#">
-              찾기
+              찾기(미구현)
             </a>
           </form>
         </nav>
