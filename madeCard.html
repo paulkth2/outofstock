@@ -20,12 +20,32 @@
     .disabled {
       background-color: gray;
     }
+    #mask {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index:1;
+      background-color: rgba(0,0,0,0.5);
+      display: none;
+    }
+    #popGuide {
+      display: none;
+      width: 800px;
+      height: 400px;
+      padding: 20px;
+      border: 3px solid black;
+      position: absolute;
+      z-index: 2;
+      float: center;
+      background: #ededed;
+      text-align: left"
+    }
   </style>
   
   <script>
     var url = window.location.href;
     
-    window.onload = function() {
+   window.onload = function() {
       var uid;
       var cards = [];
       var page = 1;
@@ -47,7 +67,8 @@
           invalid();
         }
       });
-      
+      $("#mask").css({'width': $(document).width(), 'height': $(document).height()});
+      $("#popGuide").css({'left': $(document).width()/2 - 400, 'top': $(document).height()/2 - 200});
       
       function invalid() {
         alert("비정상적인 접근입니다.");
@@ -175,6 +196,17 @@
           $("#l" + String(page)).addClass("active");
         });
       }
+      
+      $("#guideBtn").click(function() {
+        $("#popGuide").show();
+        $("#mask").show();
+        return false;
+      });
+      $("#popGuide > button").click(function() {
+        $("#popGuide").hide();
+        $("#mask").hide();
+        return false;
+      });
     }
   </script>
 </head>
@@ -195,12 +227,21 @@
         </div>
     </div>
   </nav>
+  
+  <div id = "popGuide">
+    가이드
+    <button class="btn btn-link"> 닫기 </button>
+  </div>
 
+  <div id = "mask"></div>
 
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
         <nav class = "navbar navbar-expand-lg navbar-light bg-light justify-content-between" style = "width: 100%; text-align: right;">
+          <nav>
+            <button id = "guideBtn" class="btn btn-dark"> 가이드 </button>
+          </nav>
           <nav>
             <ul class = "pagination justify-content-start" style = "margin: auto; color: black;">
               <li class = "page-item disabled">
