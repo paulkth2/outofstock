@@ -185,7 +185,7 @@ function send() {
                           snapshot.ref.getDownloadURL().then(function(downloadURL) {
                           firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("sub_images").child("ing3").child("src").set(downloadURL);
                             alert("성공적으로 카드를 생성했습니다!");
-                            window.location.href = "./makecard.html"
+                            window.location.href = "./madeCard.html"
                             });
                           });
                       });
