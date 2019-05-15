@@ -35,8 +35,11 @@ function writeToDatabase_ver2(uid, menu){
   var dict = {}
   firebase.database().ref(uid+"/menus").once('value',function(snapshot){
     var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx"}
-    var keys = Object.keys(myValue);
-    var length = keys.length;
+    if (myValue != null){
+      var keys = Object.keys(myValue);
+      var length = keys.length;
+    }
+    var length = 0;
     var newkey = firebase.database().ref(uid).child("menus").child("menu"+length).set({
       name: menu
     });
