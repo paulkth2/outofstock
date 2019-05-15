@@ -9,12 +9,12 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
+var uid = "";
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
-    console.log(firebase.auth().currentUser.uid);
+    uid = firebase.auth().currentUser.uid;
   } else {
     // No user is signed in.
   }

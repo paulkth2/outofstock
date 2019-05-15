@@ -15,7 +15,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       // No user is signed in.
     }
   });
-  
+
 
 function writeNewPost(uid, username, picture, title, body) {
     // A post entry.
@@ -43,7 +43,7 @@ function submitFile(){
     var file = document.getElementById("image-file").value;
     var name = ducument.getElementById("image-name").value;
 
-    
+
 }
 
 function readFromDatabase() {

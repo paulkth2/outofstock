@@ -7,7 +7,7 @@
 (function() {
 
 	var className = "navbar-ontop"
-	
+
 	// we start hidden, to avoid flickering
 	document.write("<style id='temp-navbar-ontop'>.navbar {opacity:0; transition: none !important}</style>")
 
@@ -18,7 +18,7 @@
 		if (window.scrollY > 15)
 			nav.classList.remove(className)
 		else
-			nav.classList.add(className) 
+			nav.classList.add(className)
 	}
 
 	document.addEventListener("DOMContentLoaded", function(event) {
@@ -37,7 +37,7 @@
   	});
 
 	window.addEventListener("scroll", function() {
-		update()			
+		update()
 	})
 
 })();
