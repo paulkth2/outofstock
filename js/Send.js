@@ -32,12 +32,22 @@ function readFromDatabase(uid,name){
 function readFromDatabaseAll(uid, send_food){
   firebase.database().ref(uid+"/customer/").once('value',function(snapshot){
     var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx"}
-    var i = Object.keys(myValue).length - 1;
-    for(var key in myValue){
-      var dict = myValue[key]
+    //var i = Object.keys(myValue).length - 1;
+    var key = Object.keys(myValue);
+    key.sort((a, b) => a.localeCompare(b, 'fr', {ignorePunctuation: true})).reverse()
+    var i = key.length - 1;
+    localStorage.setItem("length2",key.length);
+    for(var k = 0; k < key.length; k++){
+      //console.log(key)
+      var dict = myValue[key[k]]
       var status;
       var color;
-      var menu; // have to implement
+      var menu = ["연어회덮밥","참치회덮밥","초밥 셋","컷틝","정식","우동","소바"]; // have to implement
+      var menu_sel = dict["menu"].split(",");
+      var menu_final = [];
+      for(var j = 0; j < menu_sel.length; j++){
+        menu_final.push(menu[menu_sel[j]]);
+      }
 
       if(dict["status"] == 0){
         status = "NEW"
@@ -51,7 +61,7 @@ function readFromDatabaseAll(uid, send_food){
       }
 
       var row = document.getElementById("reg_customers").insertRow(1);
-      row.innerHTML = "<tr><td><input id='reg_" + i + "'class='check' type='checkbox'></td><td>"+key+"</td><td>"+dict["menu"]+"</td><td class='address'>"+dict["address"]+"</td><td>"+status+"</td></tr>"
+      row.innerHTML = "<tr><td><input id='reg_" + i + "'class='check' type='checkbox'></td><td>"+key[k]+"</td><td>"+menu_final+"</td><td class='address'>"+dict["address"]+"</td><td>"+status+"</td></tr>"
       $("#reg_"+i).closest("tr").prop("class",color)
       i = i - 1
     }
@@ -94,7 +104,7 @@ $(document).ready(function(){
 
   $(".btn-send").on("click",function(){
     var length1 = 3;
-    var length2 = 5;
+    var length2 = parseInt(localStorage.getItem("length2"));
     var address = [];
     for(var i = 0; i < length1; i++){
       if($("#rec_"+i).prop("checked") == true){
@@ -111,7 +121,9 @@ $(document).ready(function(){
     localStorage.setItem("customerList",address)
     if(address.length > 0){
       // have to implement how to send it.
-      alert("보내기 완료")
+      var link = 'mailto:'+address+'?subject=this is test&body=got the mail??';
+      window.location.href = link;
+      //alert("보내기 완료")
       for(var i = 0; i < length1; i++){
         $("#rec_"+i).prop("checked",false)
         $("#rec_"+i).closest("table").find(".checkall").prop("checked",false);
