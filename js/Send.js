@@ -12,6 +12,18 @@ function readFromDatabase(uid,name){
   })
 }
 
+function readMenu(uid){
+  var foodList = []
+  firebase.database().ref(uid+"/menus/").once('value',function(snapshot){
+    var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx", status:"xxx"}
+    //var foodList = [];
+    for(key in myValue){
+      foodList.push(myValue[key]["name"])
+    }
+    console.log(foodList)
+  }).then(readFromDatabaseAll(uid,foodList))
+}
+
 /*
 <tr class="table-danger">
   <td>
@@ -42,15 +54,16 @@ function readFromDatabaseAll(uid, send_food){
       var dict = myValue[key[k]]
       var status;
       var color;
-      var menu = ["연어회덮밥","참치회덮밥","초밥 셋","컷틝","정식","우동","소바"]; // have to implement
+      //var menu = ["연어회덮밥","참치회덮밥","초밥 셋","컷틝","정식","우동","소바"]; // have to implement
+      var menu = send_food
       var menu_sel = dict["menu"].split(",");
       var menu_final = [];
       for(var j = 0; j < menu_sel.length; j++){
         menu_final.push(menu[menu_sel[j]]);
       }
 
-      if(dict["status"] == 0){
-        status = "NEW"
+      if(dict["status"] == 2){
+        status = "NO"
         color = "NO"
       }else if(dict["status"] == 1){
         status = "VIP"
@@ -72,7 +85,8 @@ firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
      var myUID = firebase.auth().currentUser.uid;
-     readFromDatabaseAll(myUID) // write a table
+     readMenu(myUID)
+     //readFromDatabaseAll(myUID) // write a table
   } else {
     // No user is signed in.
   }
@@ -83,6 +97,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 
 $(document).ready(function(){
+
   $("#cur_card").html(localStorage.getItem("card_title"))
   console.log("ready_send")
   var sending_card = localStorage.getItem("sending_card")
