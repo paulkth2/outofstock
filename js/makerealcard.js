@@ -130,7 +130,6 @@ function send() {
     //next card to make
 
 
-    $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
 
     var key = "";
     firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").once('value', function(snapshot) {
@@ -176,6 +175,7 @@ function send() {
         alert("간단한 설명을 적어주세요.");
         return;
     }
+    $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
 
     //alert("업로드 중입니다. 이미지 파일이 큰 경우 시간이 오래 걸릴 수 있으니 잠시만 기다려주세요.");
     //console.log(typeof mainfile);
