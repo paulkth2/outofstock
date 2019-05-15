@@ -38,9 +38,8 @@ function writeToDatabase_ver2(uid, menu){
     if (myValue != null){
       var keys = Object.keys(myValue);
       var length = keys.length;
-    }else{
-      var length = 0;
     }
+    var length = 0;
     var newkey = firebase.database().ref(uid).child("menus").child("menu"+length).set({
       name: menu
     });
@@ -59,14 +58,9 @@ function readFromDatabase(uid,name){
 function readFromDatabaseMenu(uid, new_val){
   firebase.database().ref(uid+"/menus").once('value',function(snapshot){
     var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx"}
-    if (myValue != null){
-      var keys = Object.keys(myValue);
-      var length = keys.length;
-    }else{
-      var length = 0;
-    }
+    var keys = Object.keys(myValue);
     var tmp_list = [];
-    for(var i = 0; i < length; i++){
+    for(var i = 0; i < keys.length; i++){
       var name = myValue[keys[i]]["name"]
       tmp_list.push(name);
       $("#menus").append("<input id='ch"+ i +"' type='checkbox'>"+name+" <br>")
