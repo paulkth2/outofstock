@@ -7,16 +7,54 @@ function writeToDatabase(uid, name, address, rec_menu){
 
 function readFromDatabase(uid,name){
   firebase.database().ref(uid+"/customer/"+name).once('value',function(snapshot){
-    var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx"}
+    var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx", status:"xxx"}
     return myValue
   })
 }
 
-function readFromDatabaseAll(uid){
+/*
+<tr class="table-danger">
+  <td>
+    <input id="rec_0" class="check" type="checkbox">
+  </td>
+  <td>
+    (FOOD)
+  </td>
+  <td class="address">
+    (628)xxx-xxxx
+  </td>
+  <td>
+    VVIP
+  </td>
+</tr>
+*/
+
+function readFromDatabaseAll(uid, send_food){
   firebase.database().ref(uid+"/customer/").once('value',function(snapshot){
     var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx"}
-    console.log(myValue)
-    return myValue
+    var i = Object.keys(myValue).length - 1;
+    for(var key in myValue){
+      var dict = myValue[key]
+      var status;
+      var color;
+      var menu; // have to implement
+
+      if(dict["status"] == 0){
+        status = "NEW"
+        color = "NO"
+      }else if(dict["status"] == 1){
+        status = "VIP"
+        color = "table-warning"
+      }else{
+        status = "VVIP"
+        color = "table-danger"
+      }
+
+      var row = document.getElementById("reg_customers").insertRow(1);
+      row.innerHTML = "<tr><td><input id='reg_" + i + "'class='check' type='checkbox'></td><td>"+key+"</td><td>"+dict["menu"]+"</td><td class='address'>"+dict["address"]+"</td><td>"+status+"</td></tr>"
+      $("#reg_"+i).closest("tr").prop("class",color)
+      i = i - 1
+    }
   })
 }
 
@@ -24,7 +62,7 @@ firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
      var myUID = firebase.auth().currentUser.uid;
-     readFromDatabaseAll(myUID)
+     readFromDatabaseAll(myUID) // write a table
   } else {
     // No user is signed in.
   }
