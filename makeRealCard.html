@@ -36,17 +36,8 @@
     	<div class="row">
     		<div class="col-md-6" style="text-align: center">
     			<h4>
-            태그를 선정해주세요<br>
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Dropdown button
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
-              </div>
-            </div>
+            태그를 선정해주세요
+            <select id="dropdownMenuButton" name="음식 태그 선택"></select><br><br>
             메뉴 사진을 선택해주세요.<br>
             <h6>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <input type="file" id="menuimage" class="file-select" accept="image/*" /><br></h6><br>
@@ -75,12 +66,15 @@
 
     		</div>
     	</div>
-      
+      <div class="row" style="text-align: center; align-content: center; margin: 0 auto">
+        메뉴에 대한 설명 :&nbsp;&nbsp; <input type="text" id='text' style="width: 800px" placeholder="메뉴에 대한 간단한 설명을 적어주세요.">
+      </div>
+      <br>
       <div class="row">
     		<div class="col-md-12">
-    			<button type="button" class="btn btn-success" style="width: 200px; height: 100px;" onclick="send()">
+    			<button type="button" class="btn btn-success" style="width: 100px; height: 50px;" onclick="send()">
     				만들기
-    			</button>
+    			</button> <br><br>*이미지가 클 경우 업로드에 시간이 소요될 수 있습니다. 완료 창이 뜰 때까지 기다려주세요.
     		</div>
     	</div>
     </div>

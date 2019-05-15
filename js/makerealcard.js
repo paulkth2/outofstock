@@ -7,8 +7,21 @@ var ingre1file = null;
 var ingre2file = null;
 var ingre3file = null;
 
-
-
+function getDropdown(){
+    firebase.database().ref('/').child("LufDvbmzy5dl3viNeMq18158leR2").child("menus").once('value', function(snapshot) {
+        var myValue = snapshot.val();
+        var mykeys = Object.keys(myValue);
+        var dropdown = document.getElementById("dropdownMenuButton");
+        for (var key in myValue) {
+            if (myValue.hasOwnProperty(key)) {
+                var option = document.createElement('option');
+                option.text = myValue[key].name;
+                dropdown.add(option);
+            }
+        }
+      });
+}
+getDropdown()
 //function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
 function makeid(length) {
     var result           = '';
@@ -155,6 +168,10 @@ function send() {
         alert("재료3 이름을 적어주세요.");
         return;
     }
+    if (document.getElementById("text").value == ""){
+        alert("간단한 설명을 적어주세요.");
+        return;
+    }
 
     //alert("업로드 중입니다. 이미지 파일이 큰 경우 시간이 오래 걸릴 수 있으니 잠시만 기다려주세요.");
     //console.log(typeof mainfile);
@@ -168,6 +185,8 @@ function send() {
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing1").set(ingre1name);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing2").set(ingre2name);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing3").set(ingre3name);
+        firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("tag").set(document.getElementById('dropdownMenuButton').value);
+        firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("text").set(document.getElementById("text").value);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("main_image").child("src").set(downloadURL);
         storageref.child(ingre1name+ranstring()).put(ingre1file).then(function(snapshot) {
             //window.location.href = "./makecard.html";
