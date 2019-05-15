@@ -13,7 +13,7 @@
   <script src="./js/logout.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
-  
+
   <style>
     .active {
       pointer-events: none;
@@ -35,15 +35,15 @@
       text-align: left"
     }
   </style>
-  
+
   <script>
     var url = window.location.href;
-    
+
    window.onload = function() {
       var uid;
       var cards = [];
       var page = 1;
-      
+
       if(url.indexOf("#") != -1) { url = url.split("#")[0]; }
       if(url.indexOf("?") != -1) {
         page = url.split("?")[1];
@@ -61,15 +61,15 @@
           invalid();
         }
       });
-      
+
       $("#mask").css({'width': $(document).width(), 'height': $(document).height()});
       $("#popGuide").css({'left': $(document).width()/2 - $("#popGuide").width()/2, 'top': $(document).height()/2 - $("#popGuide").height()/2});
-      
+
       function invalid() {
         alert("비정상적인 접근입니다.");
         history.back();
       }
-      
+
       function startpage() {
         return firebase.database().ref('/').once('value', function(snapshot) {
           var myValue = snapshot.val();
@@ -88,7 +88,7 @@
           }
         });
       }
-      
+
       function readFD() {
         return firebase.database().ref('/').child(uid).child("card").once('value', function(snapshot) {
           var myValue = snapshot.val();
@@ -97,7 +97,7 @@
           var maxp = parseInt((cardIndex - 2) / 3) + 1;
           for(i = page * 3 - 2; i < cardIndex && i <= page * 3; i++) {
             var currentCard = myValue[cards[cardIndex - i]];
-            
+
             var divcard = document.createElement('div');
             divcard.className = "card";
               var idiv = document.createElement('div');
@@ -109,7 +109,7 @@
                   mimage.src = currentCard["main_image"]["src"];
                 idiv1.appendChild(mimage);
               idiv.appendChild(idiv1);
-              
+
               if(currentCard["wiki"] != undefined) {
                 var idiv2 = document.createElement('div');
                   idiv2.style = "width: 100%; height: auto; position: absolute; top: 0px;";
@@ -192,7 +192,7 @@
           $("#l" + String(page)).addClass("active");
         });
       }
-      
+
       $("#guideBtn").click(function() {
         $("#popGuide").show();
         $("#mask").show();
@@ -223,7 +223,7 @@
         </div>
     </div>
   </nav>
-  
+
   <div id = "popGuide">
     <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
     <div></div>
@@ -292,10 +292,11 @@
       </div>
     </div>
   </div>
-  
+
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src=./js/gather_img.js></script>
 </body>
 
 </html>

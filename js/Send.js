@@ -83,6 +83,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 
 $(document).ready(function(){
+  $("#cur_card").html(localStorage.getItem("card_title"))
   console.log("ready_send")
   var sending_card = localStorage.getItem("sending_card")
 
@@ -121,7 +122,9 @@ $(document).ready(function(){
     localStorage.setItem("customerList",address)
     if(address.length > 0){
       // have to implement how to send it.
-      var link = 'mailto:'+address+'?subject=this is test&body=got the mail??';
+      var subject = "이 메뉴를 추천드려요:" + localStorage.getItem("card_title");
+      var body = ""+localStorage.getItem("sending_card");
+      var link = 'mailto:'+address+'?subject=' +subject+ "&body=" + body;
       window.location.href = link;
       //alert("보내기 완료")
       for(var i = 0; i < length1; i++){
