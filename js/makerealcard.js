@@ -21,7 +21,7 @@ function getDropdown(){
         }
       });
 }
-getDropdown()
+
 //function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
 function makeid(length) {
     var result           = '';
@@ -185,7 +185,6 @@ function send() {
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing1").set(ingre1name);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing2").set(ingre2name);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing3").set(ingre3name);
-        firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("tag").set(document.getElementById('dropdownMenuButton').value);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("text").set(document.getElementById("text").value);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("main_image").child("src").set(downloadURL);
         storageref.child(ingre1name+ranstring()).put(ingre1file).then(function(snapshot) {
