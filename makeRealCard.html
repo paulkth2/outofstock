@@ -15,6 +15,7 @@
 </head>
 
 <body style="">
+    
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container"> <a class="navbar-brand" href="./makeCard.html">
         <i class="fa d-inline fa-lg fa-stop-circle"></i>
@@ -33,21 +34,34 @@
   <div class="py-5 text-center">
     <div class="container-fluid">
     	<div class="row">
-    		<div class="col-md-6">
-    			<h1>
-    				메뉴
-    			</h1><a href="./gallery.html"><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="550"/></a>
+    		<div class="col-md-6" style="text-align: center">
+    			<h4>
+            메뉴 사진을 선택해주세요.<br>
+            <h6>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input type="file" id="menuimage" class="file-select" accept="image/*" /><br></h6><br>
+            메뉴 이름 <input type="text" id="menu-name" placeholder="메뉴 이름을 입력하세요."/><br>
+    			</h4><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="550" id="mainpic"/>
     		</div>
     		<div class="col-md-6">
-    			<h5>
-    				재료 1
-    			</h5><a href="./gallery_ingredients.html"><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200"/></a>
-    			<h5>
-    				재료 2
-    			</h5><a href="./gallery_ingredients.html"><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200"/></a>
-    			<h5>
-    				재료 3
-    			</h5><a href="./gallery_ingredients.html"><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200"/></a>
+    			<h6>
+            재료1 <input type="text" id="menu-name" placeholder="재료 이름을 입력하세요."/> <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="file" id="ingreimage1" class="file-select" accept="image/*" />
+            <br>
+    			</h6><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient1"/><br><br>
+    			<h6>
+            재료2 <input type="text" id="menu-name" placeholder="재료 이름을 입력하세요."/> <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="file" id="ingreimage2" class="file-select" accept="image/*" />
+            <br>
+    			</h6><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient2"/><br><br>
+    			<h6>
+            재료3 <input type="text" id="menu-name" placeholder="재료 이름을 입력하세요."/> <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="file" id="ingreimage3" class="file-select" accept="image/*" />
+            <br>
+    			</h6><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient3"/><br><br>
+    			
     		</div>
     	</div>
 
@@ -60,6 +74,7 @@
     	</div>
     </div>
   </div>
+  <script src="./js/makerealcard.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
