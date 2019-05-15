@@ -15,6 +15,17 @@ var database = firebase.database();
 function register(){
   var email = document.getElementById("emailinput").value;
   var password = document.getElementById("passwordinput").value;
+
+  var passcheck1 = document.getElementById("passwordinput").value;
+  var passcheck2 = document.getElementById("passwordinput2").value;
+
+  if (passcheck1 != passcheck2){
+    alert("비밀번호가 일치하지 않습니다.");
+    document.getElementById("passwordinput").value = "";
+    document.getElementById("passwordinput2").value = "";
+
+    return 0;
+  }
   console.log("check1");
   console.log(email);
   firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -38,13 +49,15 @@ function register(){
     document.getElementById("address").value = "";
     document.getElementById("opertime").value = "";
     console.log("check3");
+
+    alert("회원가입이 완료되었습니다. 로그인 해주세요.")
   }).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
     var errorMessage = error.message;
     // ...
 
-    console.log(errorMessage);
+    alert("회원가입 오류입니다" + errorMessage);
   });
 }
 
@@ -59,6 +72,9 @@ function login(){
     var errorCode = error.code;
     var errorMessage = error.message;
     // ...
+
+    alert("로그인 오류입니다. 이메일 혹은 비밀번호를 확인하세요." + errorMessage);
+
   });
 }
 /*
