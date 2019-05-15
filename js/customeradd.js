@@ -58,9 +58,13 @@ function readFromDatabase(uid,name){
 function readFromDatabaseMenu(uid, new_val){
   firebase.database().ref(uid+"/menus").once('value',function(snapshot){
     var myValue = snapshot.val(); //{address:"xxx@bbb.ccc", menu:"xxx"}
-    var keys = Object.keys(myValue);
+    if (myValue != null){
+      var keys = Object.keys(myValue);
+      var length = keys.length;
+    }
+    var length = 0;
     var tmp_list = [];
-    for(var i = 0; i < keys.length; i++){
+    for(var i = 0; i < length; i++){
       var name = myValue[keys[i]]["name"]
       tmp_list.push(name);
       $("#menus").append("<input id='ch"+ i +"' type='checkbox'>"+name+" <br>")
