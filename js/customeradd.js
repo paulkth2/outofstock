@@ -27,7 +27,7 @@ function writeToDatabaseMenu(uid, menu){
     var newkey = firebase.database().ref(uid).child("menus").child("menu"+length).set({
       name: menu
     });
-    $("#menus").append("<input id='ch"+ length +"' type='checkbox'>"+menu+" <button type='button' class='btn btn-outline-danger btn-sm'>삭제</button><br>")
+    $("#menus").append("<input id='ch"+ length +"' type='checkbox'>"+menu+" <br>")
   })
 }
 
@@ -60,7 +60,7 @@ function readFromDatabaseMenu(uid, new_val){
     for(var i = 0; i < keys.length; i++){
       var name = myValue[keys[i]]["name"]
       tmp_list.push(name);
-      $("#menus").append("<input id='ch"+ i +"' type='checkbox'>"+name+" <button type='button' class='btn btn-outline-danger btn-sm'>삭제</button><br>")
+      $("#menus").append("<input id='ch"+ i +"' type='checkbox'>"+name+" <br>")
     }
     /*
     if(new_val){
