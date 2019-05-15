@@ -38,8 +38,9 @@ function writeToDatabase_ver2(uid, menu){
     if (myValue != null){
       var keys = Object.keys(myValue);
       var length = keys.length;
+    }else{
+      var length = 0;
     }
-    var length = 0;
     var newkey = firebase.database().ref(uid).child("menus").child("menu"+length).set({
       name: menu
     });
@@ -61,8 +62,9 @@ function readFromDatabaseMenu(uid, new_val){
     if (myValue != null){
       var keys = Object.keys(myValue);
       var length = keys.length;
+    }else{
+      var length = 0;
     }
-    var length = 0;
     var tmp_list = [];
     for(var i = 0; i < length; i++){
       var name = myValue[keys[i]]["name"]
