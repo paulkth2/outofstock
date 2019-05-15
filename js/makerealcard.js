@@ -8,6 +8,22 @@ var ingre2file = null;
 var ingre3file = null;
 
 
+
+//function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+function ranstring(){
+    return makeid(12);
+}
+
+
 function handleFileSelect(evt) {
     var files = evt.target.files;
 
@@ -106,26 +122,79 @@ function send() {
       key = "card" + String(mykeys.length);
     });
 
+    if (document.getElementById("menuimage").files.length == 0){
+        alert("메뉴 이미지를 등록해주세요");
+        return;
+    }
+    if (document.getElementById("ingreimage1").files.length == 0){
+        alert("재료1 이미지를 등록해주세요");
+        return;
+    }
+    if (document.getElementById("ingreimage2").files.length == 0){
+        alert("재료2 이미지를 등록해주세요");
+        return;
+    }
+    if (document.getElementById("ingreimage3").files.length == 0){
+        alert("재료3 이미지를 등록해주세요");
+        return;
+    }
+
+    if (document.getElementById("menu-name").value == ""){
+        alert("메뉴 이름을 적어주세요.");
+        return;
+    }
+    if (document.getElementById("1-name").value == ""){
+        alert("재료1 이름을 적어주세요.");
+        return;
+    }
+    if (document.getElementById("2-name").value == ""){
+        alert("재료2 이름을 적어주세요.");
+        return;
+    }
+    if (document.getElementById("3-name").value == ""){
+        alert("재료3 이름을 적어주세요.");
+        return;
+    }
+
+    //alert("업로드 중입니다. 이미지 파일이 큰 경우 시간이 오래 걸릴 수 있으니 잠시만 기다려주세요.");
     //console.log(typeof mainfile);
-    storageref.child(mainname+'-'+firebase.auth().currentUser.uid).put(mainfile).then(function(snapshot) {
-      storageref.child(ingre1name+'-'+firebase.auth().currentUser.uid).put(ingre1file).then(function(snapshot) {
-          //window.location.href = "./makecard.html";
-      });
-      storageref.child(ingre2name+'-'+firebase.auth().currentUser.uid).put(ingre2file).then(function(snapshot) {
-          //window.location.href = "./makecard.html";
-      });
-      storageref.child(ingre3name+'-'+firebase.auth().currentUser.uid).put(ingre3file).then(function(snapshot) {
-          //window.location.href = "./makecard.html";
-      });
+    storageref.child(mainname+ranstring()).put(mainfile).then(function(snapshot) {
+        //console.log("check1");
+      
+      
       snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        //console.log(key);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("menu").set(mainname);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing1").set(ingre1name);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing2").set(ingre2name);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("explain").child("ing3").set(ingre3name);
         firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("main_image").child("src").set(downloadURL);
-      });
-        alert("성공적으로 카드를 생성했습니다!");
-        window.location.href = "./makecard.html";
+        storageref.child(ingre1name+ranstring()).put(ingre1file).then(function(snapshot) {
+            //window.location.href = "./makecard.html";
+            //console.log("check2");
+              snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                  firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("sub_images").child("ing1").child("src").set(downloadURL);
+                  storageref.child(ingre2name+ranstring()).put(ingre2file).then(function(snapshot) {
+                      //window.location.href = "./makecard.html";
+                      //console.log("check3");
+                      snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                      firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("sub_images").child("ing2").child("src").set(downloadURL);
+                      storageref.child(ingre3name+ranstring()).put(ingre3file).then(function(snapshot) {
+                          //window.location.href = "./makecard.html";
+                          //console.log("check4");
+                          snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                          firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("sub_images").child("ing3").child("src").set(downloadURL);
+                            alert("성공적으로 카드를 생성했습니다!");
+                            window.location.href = "./makecard.html"
+                            });
+                          });
+                      });
+                  });
+              });
+          });
+    });
+        
+        //window.location.href = "./makecard.html";
     });
 
 
