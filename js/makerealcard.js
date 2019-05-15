@@ -128,6 +128,10 @@ function send() {
     var ingre2name = document.getElementById('2-name').value;
     var ingre3name = document.getElementById('3-name').value;
     //next card to make
+
+
+    $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+
     var key = "";
     firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").once('value', function(snapshot) {
       var myValue = snapshot.val();
