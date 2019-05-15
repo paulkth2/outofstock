@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html>
 
@@ -168,11 +168,18 @@
                 p3.appendChild(a2);
                   var a1 = document.createElement('a');
                   a1.className = "btn btn-secondary";
-                  a1.style = "float: right;";
+                  a1.style = "float: right; margin-left: 5px;";
                   a1.href = "./card_explain.html?key=card" + String(cardIndex - i);
                     var itext4 = document.createTextNode("설명 수정");
                   a1.appendChild(itext4);
-                p3.appendChild(a1);
+              p3.appendChild(a1);
+                var a0 = document.createElement('a');
+                a0.className = "btn btn-info";
+                a0.style = "float: right;";
+                a0.href = "./makeWiki.html?key=card" + String(cardIndex - i);
+                  var itext7 = document.createTextNode("상세 설명");
+                a0.appendChild(itext7);
+              p3.appendChild(a0);
               divcb.appendChild(p3);
             divcard.appendChild(divcb);
 
