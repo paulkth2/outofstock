@@ -134,8 +134,10 @@ function send() {
     var key = "";
     firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").once('value', function(snapshot) {
       var myValue = snapshot.val();
-      var mykeys = Object.keys(myValue);
-      key = "card" + String(mykeys.length);
+        var mykeys = Object.keys(myValue).sort(function (a, b) {
+            return Number(a.split("card")[1]) - Number(b.split("card")[1]);
+        });
+      key = "card" + String(Number(mykeys[mykeys.length - 1].split("card")[1]) + 1);
     });
 
     if (document.getElementById("menuimage").files.length == 0){
@@ -206,8 +208,8 @@ function send() {
                           //console.log("check4");
                           snapshot.ref.getDownloadURL().then(function(downloadURL) {
                           firebase.database().ref('/').child(firebase.auth().currentUser.uid).child("card").child(key).child("sub_images").child("ing3").child("src").set(downloadURL);
-                            alert("성공적으로 카드를 생성했습니다!");
-                            window.location.href = "./madeCard.html"
+                              alert("성공적으로 카드를 생성했습니다!");
+                              window.location.href = "./madeCard.html";
                             });
                           });
                       });

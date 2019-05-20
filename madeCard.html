@@ -1,309 +1,375 @@
 ﻿
-<!DOCTYPE html>
-<html>
+    <!DOCTYPE html>
+    <html>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
-  <script src="./js/logout.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
-
-  <style>
-    .active {
-      pointer-events: none;
-    }
-    #mask {
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index:1;
-      background-color: rgba(0,0,0,0.5);
-      display: none;
-    }
-    #popGuide {
-      display: none;
-      position: absolute;
-      z-index: 2;
-      float: center;
-      background: #ededed;
-      text-align: left"
-    }
-  </style>
-
-  <script>
-    var url = window.location.href;
-
-   window.onload = function() {
-      var uid;
-      var cards = [];
-      var page = 1;
-
-      if(url.indexOf("#") != -1) { url = url.split("#")[0]; }
-      if(url.indexOf("?") != -1) {
-        page = url.split("?")[1];
-        if(page.indexOf("page=") == 0) {
-          page = Number(page.split("page=")[1]);
-        }
-        else { invalid(); }
-      }
-      startpage();
-
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          uid = firebase.auth().currentUser.uid;
-        } else {
-          invalid();
-        }
-      });
-
-      $("#mask").css({'width': $(document).width(), 'height': $(document).height()});
-      $("#popGuide").css({'left': $(document).width()/2 - $("#popGuide").width()/2, 'top': $(document).height()/2 - $("#popGuide").height()/2});
-
-      function invalid() {
-        alert("비정상적인 접근입니다.");
-        history.back();
-      }
-
-      function startpage() {
-        return firebase.database().ref('/').once('value', function(snapshot) {
-          var myValue = snapshot.val();
-          var idpws = Object.keys(myValue);
-          var valid = false;
-
-          for(var i = 0; i < idpws.length; i++) {
-            if(idpws[i] == uid) {
-              readFD();
-              valid = true;
-              break;
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+        <script src="./js/logout.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+        <style>
+            .active {
+                pointer-events: none;
             }
-          }
-          if(valid == false) {
-            invalid();
-          }
-        });
-      }
+            #mask {
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 1;
+                background-color: rgba(0,0,0,0.5);
+                display: none;
+            }
+            #popGuide {
+                display: none;
+                position: absolute;
+                z-index: 2;
+                background: #ededed;
+                text-align: left;
+            }
+            .ui-autocomplete {
+                max-height: 400px;
+                width: 200px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                background: white;
+                border: 1px solid black;
+                font-size: 20px;
+                text-align: left;
+                padding: 0px 5px 5px 10px;
+            }
+            .ui-helper-hidden-accessible {
+                display: none;
+            }
+        </style>
+        <script>
+            var url = window.location.href;
 
-      function readFD() {
-        return firebase.database().ref('/').child(uid).child("card").once('value', function(snapshot) {
-          var myValue = snapshot.val();
-          cards = Object.keys(myValue);
-          var cardIndex = cards.length;
-          var maxp = parseInt((cardIndex - 2) / 3) + 1;
-          for(i = page * 3 - 2; i < cardIndex && i <= page * 3; i++) {
-            var currentCard = myValue[cards[cardIndex - i]];
+            $(document).ready(function () {
+                var uid;
+                var cards = [];
+                var menus = [];
+                var page = 1;
+                var sdata = "";
 
-            var divcard = document.createElement('div');
-            divcard.className = "card";
-              var idiv = document.createElement('div');
-              idiv.style = "width: 100%; height: auto; text-align: right;";
-                var idiv1 = document.createElement('div');
-                idiv1.style = "width: 100%; height: auto; position: relative;";
-                  var mimage = document.createElement('img');
-                  mimage.className = "card-img-top";
-                  mimage.src = currentCard["main_image"]["src"];
-                idiv1.appendChild(mimage);
-              idiv.appendChild(idiv1);
 
-              if(currentCard["wiki"] != undefined) {
-                var idiv2 = document.createElement('div');
-                  idiv2.style = "width: 100%; height: auto; position: absolute; top: 0px;";
-                    var imga = document.createElement('a');
-                      var img = document.createElement('img');
-                      if(currentCard["wiki"]["istab1"]) {
-                        img.src = "https://cdn.pixabay.com/photo/2013/06/07/09/53/notepad-117597__340.png";
-                      } else {
-                        img.src = "https://cdn.pixabay.com/photo/2016/07/03/18/36/youtube-1495277_1280.png";
-                      }
-                      img.style = "width: 15%; height: auto;"
-                    imga.appendChild(img);
-                    imga.href = "makeWiki.html?key=card" + String(cardIndex - i);
-                  idiv2.appendChild(imga);
-                idiv.appendChild(idiv2);
-              }
-            divcard.appendChild(idiv);
-              var divcb = document.createElement('div');
-              divcb.className = "card-block";
-              divcb.style = "padding: 10px; padding-bottom: 0px";
-                var h5 = document.createElement('h5');
-                h5.className = "card-title";
-                h5.style = "font-weight: bold;";
-                  var itext1 = document.createTextNode(currentCard["explain"]["menu"]);
-                h5.appendChild(itext1);
-              divcb.appendChild(h5);
-                var p1 = document.createElement('p');
-                p1.className = "card-text";
-                p1.style = "font-weight: bold;";
-                  var itext2 = document.createTextNode("재료 : " + currentCard["explain"]["ing1"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing2"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing3"]);
-                p1.appendChild(itext2);
-              divcb.appendChild(p1);
-                var p2 = document.createElement('div');
-                p2.style = "max-height: 264px; overflow: hidden;";
-                  var extext = currentCard["explain"]["text"].split("\n");
-                for(j = 0; j < extext.length; j++) {
-                  p2.appendChild(document.createTextNode(extext[j]));
-                  p2.appendChild(document.createElement('br'));
+                if (url.indexOf("#") != -1) { url = url.split("#")[0]; }
+                if (url.indexOf("?") != -1) {
+                    page = url.split("?")[1];
+                    if (url.split("?").length == 3) {
+                        sdata = decodeURI(url.split("?n=")[1]);
+                    }
+                    if (page.indexOf("page=") == 0) {
+                        page = Number(page.split("page=")[1]);
+                    }
+                    else { invalid(); }
                 }
-              divcb.appendChild(p2);
-                var p3 = document.createElement('p');
-                p3.style = "margin-top: 5px;";
-                  var a3 = document.createElement('a');
-                  a3.className = "btn btn-danger";
-                  a3.style = "color: white;";
-                  a3.href = "#";
-                    var itext6 = document.createTextNode("삭제(미구현)");
-                  a3.appendChild(itext6);
-                p3.appendChild(a3);
-                  var a2 = document.createElement('a');
-                  a2.className = "btn btn-success";
-                  a2.style = "float: right; margin-left: 5px;";
-                  a2.href = "./Customers.html";
-                    var itext5 = document.createTextNode("보내기");
-                  a2.appendChild(itext5);
-                p3.appendChild(a2);
-                  var a1 = document.createElement('a');
-                  a1.className = "btn btn-secondary";
-                  a1.style = "float: right; margin-left: 5px;";
-                  a1.href = "./card_explain.html?key=card" + String(cardIndex - i);
-                    var itext4 = document.createTextNode("설명 수정");
-                  a1.appendChild(itext4);
-              p3.appendChild(a1);
-                var a0 = document.createElement('a');
-                a0.className = "btn btn-info";
-                a0.style = "float: right;";
-                a0.href = "./makeWiki.html?key=card" + String(cardIndex - i);
-                  var itext7 = document.createTextNode("상세 설명");
-                a0.appendChild(itext7);
-              p3.appendChild(a0);
-              divcb.appendChild(p3);
-            divcard.appendChild(divcb);
+                startpage();
 
-            var cardId = "c" + String((i-1)%3+1);
-            document.getElementById(cardId).appendChild(divcard);
-          }
-          for(i = 1; i <= maxp && i <= 5; i++) {
-            var lid = "#l" + String(i);
-            $(lid).removeClass("disabled");
-            $(lid).children()[0].style += {'background': 'white'};
-            if(i == 1) {
-              $(lid).children()[0].href = "./madeCard.html";
-            } else {
-              $(lid).children()[0].href = "./madeCard.html?page=" + String(i);
-            }
-          }
-          $("#l" + String(page)).addClass("active");
-        });
-      }
+                firebase.auth().onAuthStateChanged(function (user) {
+                    if (user) {
+                        uid = firebase.auth().currentUser.uid;
+                    } else {
+                        invalid();
+                    }
+                });
 
-      $("#guideBtn").click(function() {
-        $("#popGuide").show();
-        $("#mask").show();
-        return false;
-      });
-      $("#popGuide > button").click(function() {
-        $("#popGuide").hide();
-        $("#mask").hide();
-        return false;
-      });
-    }
-  </script>
-</head>
+                $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                $("#popGuide").css({ 'left': $(document).width() / 2 - $("#popGuide").width() / 2, 'top': $(document).height() / 2 - $("#popGuide").height() / 2 });
 
-<body style="">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-    <div class="container"> <a class="navbar-brand" href="./makeCard.html">
-        <i class="fa d-inline fa-lg fa-stop-circle"></i>
-        <b>Out of Stock Promotions</b>
-      </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbar10">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
-            <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
-          </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">로그아웃</a>
-        </div>
-    </div>
-  </nav>
+                function invalid() {
+                    alert("비정상적인 접근입니다.");
+                    history.back();
+                }
 
-  <div id = "popGuide">
-    <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
-    <div></div>
-    <img src="./pictures/guide1.png" style = "width: 500px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
-  </div>
+                function startpage() {
+                    return firebase.database().ref('/').once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        var idpws = Object.keys(myValue);
+                        var valid = false;
 
-  <div id = "mask"></div>
+                        for (var i = 0; i < idpws.length; i++) {
+                            if (idpws[i] == uid) {
+                                readFD();
+                                valid = true;
+                                break;
+                            }
+                        }
+                        if (valid == false) {
+                            invalid();
+                        }
+                    });
+                }
 
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-12">
-        <nav class = "navbar navbar-expand-lg navbar-light bg-light justify-content-between" style = "width: 100%; text-align: right;">
-          <nav>
-            <button id = "guideBtn" class="btn btn-dark"> 가이드 </button>
-          </nav>
-          <nav>
-            <ul class = "pagination justify-content-start" style = "margin: auto; color: black;">
-              <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray; background: #ddd;"> << </a>
-              </li>
-              <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray; background: #ddd;"> < </a>
-              </li>
-              <li class = "page-item disabled" id = "l1">
-                <a class = "page-link" style = "color:black"; background: #ddd;>1</a>
-              </li>
-              <li class = "page-item disabled" id = "l2">
-                <a class = "page-link" style = "color:black; background: #ddd;">2</a>
-              </li>
-              <li class = "page-item disabled" id = "l3">
-                <a class = "page-link" style = "color:black; background: #ddd;">3</a>
-              </li>
-              <li class = "page-item disabled" id = "l4">
-                <a class = "page-link" style = "color:black; background: #ddd;">4</a>
-              </li>
-              <li class = "page-item disabled" id = "l5">
-                <a class = "page-link" style = "color:black; background: #ddd;">5</a>
-              </li>
-              <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray; background: #dddddd;"> > </a>
-              </li>
-              <li class = "page-item disabled">
-                <a class = "page-link" style = "font-weight: bold; color:gray; background: #dddddd;"> >> </a>
-              </li>
-            </ul>
-          </nav>
-          <form class="form-inline">
-            <input class = "form-control mr-sm-2" style = "width: 200px; margin: auto;" type = "text"> </input>
-            <a class = "btn btn-primary" href = "#">
-              찾기(미구현)
-            </a>
-          </form>
+                function readFD() {
+                    return firebase.database().ref('/').child(uid).child("card").once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        cards = Object.keys(myValue).sort(function (a, b) {
+                            return Number(a.split("card")[1]) - Number(b.split("card")[1]);
+                        });
+                        var cardIndex = cards.length;
+                        for (i = 1; i < cards.length; i++) {
+                            menus.push(myValue[cards[i]]["explain"]["menu"]);
+                        }
+                        if (sdata != "") {
+                            var oldcards = cards;
+                            cards = ["card0"];
+                            for (i = 0; i < menus.length; i++) {
+                                if (menus[i].indexOf(sdata) != -1) {
+                                    cards.push(oldcards[i+1]);
+                                }
+                            }
+                            cardIndex = cards.length;
+                        }
+
+                        var maxp = parseInt((cardIndex - 2) / 3) + 1;
+                        var x = 0;
+                        for (i = page * 3 - 2; i < cardIndex && i <= page * 3; i++) {
+                            x++;
+                            var currentCard = myValue[cards[cardIndex - i]];
+
+                            var divcard = document.createElement('div');
+                            divcard.className = "card";
+                            var idiv = document.createElement('div');
+                            idiv.style = "width: 100%; height: auto; text-align: right;";
+                            var idiv1 = document.createElement('div');
+                            idiv1.style = "width: 100%; height: auto; position: relative;";
+                            var mimage = document.createElement('img');
+                            mimage.className = "card-img-top";
+                            mimage.src = currentCard["main_image"]["src"];
+                            idiv1.appendChild(mimage);
+                            idiv.appendChild(idiv1);
+
+                            if (currentCard["wiki"] != undefined) {
+                                var idiv2 = document.createElement('div');
+                                idiv2.style = "width: 100%; height: auto; position: absolute; top: 0px;";
+                                var imga = document.createElement('a');
+                                var img = document.createElement('img');
+                                if (currentCard["wiki"]["istab1"]) {
+                                    img.src = "https://cdn.pixabay.com/photo/2013/06/07/09/53/notepad-117597__340.png";
+                                } else {
+                                    img.src = "https://cdn.pixabay.com/photo/2016/07/03/18/36/youtube-1495277_1280.png";
+                                }
+                                img.style = "width: 15%; height: auto;"
+                                imga.appendChild(img);
+                                imga.href = "makeWiki.html?key=" + cards[cardIndex - i];
+                                idiv2.appendChild(imga);
+                                idiv.appendChild(idiv2);
+                            }
+                            divcard.appendChild(idiv);
+                            var divcb = document.createElement('div');
+                            divcb.className = "card-block";
+                            divcb.style = "padding: 10px; padding-bottom: 0px";
+                            var h5 = document.createElement('h5');
+                            h5.className = "card-title";
+                            h5.style = "font-weight: bold;";
+                            var itext1 = document.createTextNode(currentCard["explain"]["menu"]);
+                            h5.appendChild(itext1);
+                            divcb.appendChild(h5);
+                            var p1 = document.createElement('p');
+                            p1.className = "card-text";
+                            p1.style = "font-weight: bold;";
+                            var itext2 = document.createTextNode("재료 : " + currentCard["explain"]["ing1"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing2"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing3"]);
+                            p1.appendChild(itext2);
+                            divcb.appendChild(p1);
+                            var p2 = document.createElement('div');
+                            p2.style = "max-height: 264px; overflow: hidden;";
+                            var extext = currentCard["explain"]["text"].split("\n");
+                            for (j = 0; j < extext.length; j++) {
+                                p2.appendChild(document.createTextNode(extext[j]));
+                                p2.appendChild(document.createElement('br'));
+                            }
+                            divcb.appendChild(p2);
+                            var p3 = document.createElement('p');
+                            p3.style = "margin-top: 5px;";
+                            var a3 = document.createElement('button');
+                            a3.className = "btn btn-danger";
+                            a3.style = "color: white;";
+                            a3.id = "del_" + String(x);
+                            a3.data = cards[cardIndex - i];
+                            var itext6 = document.createTextNode("삭제");
+                            a3.appendChild(itext6);
+                            p3.appendChild(a3);
+                            var a2 = document.createElement('a');
+                            a2.className = "btn btn-success";
+                            a2.style = "float: right; margin-left: 5px;";
+                            a2.href = "./Customers.html";
+                            var itext5 = document.createTextNode("보내기");
+                            a2.appendChild(itext5);
+                            p3.appendChild(a2);
+                            var a1 = document.createElement('a');
+                            a1.className = "btn btn-secondary";
+                            a1.style = "float: right; margin-left: 5px;";
+                            a1.href = "./card_explain.html?key=" + cards[cardIndex - i];
+                            var itext4 = document.createTextNode("설명 수정");
+                            a1.appendChild(itext4);
+                            p3.appendChild(a1);
+                            var a0 = document.createElement('a');
+                            a0.className = "btn btn-info";
+                            a0.style = "float: right;";
+                            a0.href = "./makeWiki.html?key=" + cards[cardIndex - i];
+                            var itext7 = document.createTextNode("상세 설명");
+                            a0.appendChild(itext7);
+                            p3.appendChild(a0);
+                            divcb.appendChild(p3);
+                            divcard.appendChild(divcb);
+
+                            var cardId = "c" + String((i - 1) % 3 + 1);
+                            document.getElementById(cardId).appendChild(divcard);
+                        }
+                        for (i = 1; i <= maxp && i <= 5; i++) {
+                            var lid = "#l" + String(i);
+                            $(lid).removeClass("disabled");
+                            $(lid).children()[0].style += { 'background': 'white' };
+                            $(lid).children()[0].href = "./madeCard.html?page=" + String(i);
+                        }
+                        $("#l" + String(page)).addClass("active");
+                    });
+                }
+
+                function delFD(cardid) {
+                    firebase.database().ref('/').child(uid).child("card").child(cardid).remove();
+                    location.href = url;
+                }
+
+                $("#guideBtn").click(function () {
+                    $("#popGuide").show();
+                    $("#mask").show();
+                    return false;
+                });
+                $("#popGuide > button").click(function () {
+                    $("#popGuide").hide();
+                    $("#mask").hide();
+                    return false;
+                });
+
+                $("#searchbtn").click(function () {
+                    var sval = $("#menusearch")[0].value;
+                    location.href = "./madeCard.html?page=1?n=" + sval;
+                    return false;
+                });
+                $("#menusearch").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#searchbtn").click();
+                        return false;
+                    }
+                });
+                $("#menusearch").autocomplete({
+                    source: menus,
+                    select: function (event, ui) {
+                        $(this)[0].value = ui.item.value;
+                        return false;
+                    }
+                });
+
+                $(document).on("click", "#del_1", function () {
+                    delFD($(this)[0].data);
+                    return false;
+                });
+                $(document).on("click", "#del_2", function () {
+                    delFD($(this)[0].data);
+                    return false;
+                });
+                $(document).on("click", "#del_3", function () {
+                    delFD($(this)[0].data);
+                    return false;
+                });
+            });
+        </script>
+    </head>
+
+    <body style="">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="./makeCard.html">
+                    <i class="fa d-inline fa-lg fa-stop-circle"></i>
+                    <b>Out of Stock Promotions</b>
+                </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar10">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html">카드 만들기</a> </li>
+                        <li class="nav-item"> <a class="nav-link" href="./madeCard.html">카드함</a> </li>
+                    </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">로그아웃</a>
+                </div>
+            </div>
         </nav>
-      </div>
-    </div>
-    <div class = "row" style = "padding-top:5px; padding-bottom: 5px;">
-      <div class = "col-md-12">
-        <div class = "row">
-          <div class = "col-md-4" id = "c1">
-          </div>
-          <div class = "col-md-4" id = "c2">
-          </div>
-          <div class = "col-md-4" id = "c3">
-          </div>
+        <div id="popGuide">
+            <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+            <div></div>
+            <img src="./pictures/guide1.png" style="width: 500px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
         </div>
-      </div>
-    </div>
-  </div>
+        <div id="mask"></div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between" style="width: 100%; text-align: right;">
+                        <nav>
+                            <button id="guideBtn" class="btn btn-dark"> 가이드 </button>
+                        </nav>
+                        <nav>
+                            <ul class="pagination justify-content-start" style="margin: auto; color: black;">
+                                <li class="page-item disabled">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> << </a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> < </a>
+                                </li>
+                                <li class="page-item disabled" id="l1">
+                                    <a class="page-link" style="color:black" ; background: #ddd;>1</a>
+                                </li>
+                                <li class="page-item disabled" id="l2">
+                                    <a class="page-link" style="color:black; background: #ddd;">2</a>
+                                </li>
+                                <li class="page-item disabled" id="l3">
+                                    <a class="page-link" style="color:black; background: #ddd;">3</a>
+                                </li>
+                                <li class="page-item disabled" id="l4">
+                                    <a class="page-link" style="color:black; background: #ddd;">4</a>
+                                </li>
+                                <li class="page-item disabled" id="l5">
+                                    <a class="page-link" style="color:black; background: #ddd;">5</a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #dddddd;"> > </a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #dddddd;"> >> </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <form class="form-inline">
+                            <input id="menusearch" class="form-control mr-sm-2" style="width: 200px; margin: auto;" type="text"> </input>
+                            <a id="searchbtn" class="btn btn-primary">
+                                찾기
+                            </a>
+                        </form>
+                    </nav>
+                </div>
+            </div>
+            <div class="row" style="padding-top:5px; padding-bottom: 5px;">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4" id="c1">
+                        </div>
+                        <div class="col-md-4" id="c2">
+                        </div>
+                        <div class="col-md-4" id="c3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script src=./js/gather_img.js></script>
-</body>
+        <script src=./js/gather_img.js></script>
+    </body>
 
-</html>
+    </html>
