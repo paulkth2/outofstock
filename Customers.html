@@ -45,10 +45,18 @@
     		</div>
     	</div>
     	<div class="row">
-    		<div class="col-md-12">
-          <!--
+    		<div class="col-md-6">
     			<h3>
-    				<span id="cur_card">(추천 음식 기준)</span> 에 맞춘 추천 손님
+    				<span id="cur_card"><div class="btn-group">
+            <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <strong>15</strong>
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item">7</a>
+              <a class="dropdown-item">15</a>
+              <a class="dropdown-item">30</a>
+            </div>
+          </div></span> 일 이상 연락이 없었어요
     			</h3>
     			<table class="table" id="rec_customers">
     				<thead>
@@ -63,7 +71,7 @@
     							Favorite Food
     						</th>
     						<th>
-    							Address
+    							Last date
     						</th>
     						<th>
     							Status
@@ -71,66 +79,13 @@
     					</tr>
     				</thead>
     				<tbody >
-            -->
-              <!--
-              <tr class="table-danger">
-    						<td>
-    							<input id="rec_0" class="check" type="checkbox">
-    						</td>
-                <td>
-    							(Name)
-    						</td>
-    						<td>
-    							(FOOD)
-    						</td>
-    						<td class="address">
-    							(628)xxx-xxxx
-    						</td>
-    						<td>
-    							VVIP
-    						</td>
-    					</tr>
-    					<tr class="table-warning">
-    						<td>
-    							<input id="rec_1" class="check" type="checkbox">
-    						</td>
-                <td>
-    							(Name)
-    						</td>
-    						<td>
-    							(FOOD)
-    						</td>
-    						<td class="address">
-    							(201)xxx-xxxx
-    						</td>
-    						<td>
-    							VIP
-    						</td>
-    					</tr>
-    					<tr class="table-warning">
-    						<td>
-    							<input id="rec_2" class="check" type="checkbox">
-    						</td>
-                <td>
-    							(Name)
-    						</td>
-    						<td>
-    							(FOOD)
-    						</td>
-    						<td class="address">
-    							(628)xxx-xxxx
-    						</td>
-    						<td>
-    							VIP
-    						</td>
-    					</tr>
-            -->
+
     				</tbody>
     			</table>
     		</div>
-    		<div class="col-md-12">
+    		<div class="col-md-6">
     			<h3>
-    				등록 손님 목록
+    				등록 손님 목록 <button type="button" class="btn btn-outline-danger pull-right delete">삭제</button>
     			</h3>
     			<table class="table" id="reg_customers">
     				<thead>
@@ -145,7 +100,7 @@
     							Favorite Food
     						</th>
     						<th>
-    							Address
+    							Last date
     						</th>
     						<th>
     							Status
