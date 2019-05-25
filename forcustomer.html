@@ -1,0 +1,158 @@
+﻿
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+        <style>
+            table {
+                border-collapse: collapse;
+                margin: 0px;
+            }
+        </style>
+        <script>
+            var url = window.location.href;
+            var firebaseConfig = {
+                apiKey: "AIzaSyDDa6NB9RLNLuSPzudu0XvJ6yNeiDhYr7I",
+                authDomain: "outofstockcs374.firebaseapp.com",
+                databaseURL: "https://outofstockcs374.firebaseio.com",
+                projectId: "outofstockcs374",
+                storageBucket: "outofstockcs374.appspot.com",
+                messagingSenderId: "825220328740",
+                appId: "1:825220328740:web:7fe1219c00c1ebae"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+
+            $(document).ready(function () {
+                var uid;
+                var key;
+                var card;
+                
+                if (url.indexOf("?") != -1 && url.split("?").length == 3) {
+                    uid = url.split("?")[1];
+                    key = url.split("?key=")[1];
+                }
+                else {
+                    invalid();
+                }
+
+                startpage();
+
+                function invalid() {
+                    alert("비정상적인 접근입니다.");
+                    history.back();
+                }
+
+                function startpage() {
+                    return firebase.database().ref('/').once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        var idpws = Object.keys(myValue);
+                        var valid = false;
+
+                        for (var i = 0; i < idpws.length; i++) {
+                            if (idpws[i] == uid) {
+                                readFD();
+                                valid = true;
+                                break;
+                            }
+                        }
+                        if (valid == false) {
+                            invalid();
+                        }
+                    });
+                }
+
+                function readFD() {
+                    return firebase.database().ref('/').child(uid).child("card").once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        var keys = Object.keys(myValue);
+                        var valid = false;
+
+                        for (var i = 0; i < keys.length; i++) {
+                            var cardid = keys[i];
+                            if (key == cardid) {
+                                card = myValue[key];
+                                makepage();
+                                valid = true;
+                                break;
+                            }
+                        }
+                        if (valid == false) {
+                            invalid();
+                        }
+                    });
+                }
+
+                function makepage() {
+                    document.getElementById("menu").innerHTML = card["explain"]["menu"];
+                    document.getElementById("ings").innerHTML = card["explain"]["ing1"] + "&nbsp;&nbsp;&nbsp;" + card["explain"]["ing2"] + "&nbsp;&nbsp;&nbsp;" + card["explain"]["ing3"];
+                    document.getElementById("text").innerHTML = card["explain"]["text"];
+                    document.getElementById("menuimg").src = card["main_image"]["src"];
+                    document.getElementById("ing1img").src = card["sub_images"]["ing1"]["src"];
+                    document.getElementById("ing2img").src = card["sub_images"]["ing2"]["src"];
+                    document.getElementById("ing3img").src = card["sub_images"]["ing3"]["src"];
+                    if (card["wiki"] == undefined) {
+                        document.getElementById("ptext").style = "display: none;";
+                    } else if (card["wiki"]["istab1"]) {
+                        $("#ptext").html(card["wiki"]["ntext"]);
+                    } else {
+                        var vid = document.getElementById("vid");
+                        document.getElementById("ptext").style = "padding: 0px;";
+                        vid.src = "https://www.youtube.com/embed/" + card["wiki"]["link"].split("=")[1];
+                        vid.style = "display: block;"
+                    }
+                }
+                
+                $(document).on("click", "#goback", function () {
+                    self.close();
+                    return false;
+                });
+            });
+        </script>
+    </head>
+    <body style="background-color: #ededed">
+        <center>
+            <div style="text-align: center; width: 996px; background-color: #ccc; padding: 20px; padding-bottom: 10px;">
+                <div id="mtext" style="text-align: center; background-color: #f8f8f8;">
+                    <h1 id="menu" style="font-weight: bold; padding: 10px; margin: auto;"></h1>
+                </div>
+                <div style="text-align: center; width: 100%; margin: auto; background-color: #f8f8f8">
+                    <table>
+                        <tr>
+                            <td rowspan="3"> <img id="menuimg" src="" style="width: 700px; height: auto" /> </td>
+                            <td> <img id="ing1img" src="" style="width:100%; height: auto" /> </td>
+                        </tr>
+                        <tr>
+                            <td> <img id="ing2img" src="" style="width:100%; height: auto" /> </td>
+                        </tr>
+                        <tr>
+                            <td> <img id="ing3img" src="" style="width:100%; height: auto" /> </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="height: 5px;"></div>
+                <div style="text-align: left; background-color: #f8f8f8; padding: 10px;">
+                    <p id="ings" style="font-size: xx-large; font-weight: bold;"></p>
+                    <a id="text"></a>
+                </div>
+                <div style="height: 5px;"></div>
+                <div id="ptext" style="width: 956px; text-align: left; min-height: 200px; display: inline-block; background-color: #f8f8f8; padding: 5px;">
+                    <iframe id="vid" style="display: none;" width="956" height="538" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div style="padding-top: 10px;">
+                    <button class="btn btn-danger btn-lg" id="goback"> 나가기 </button>
+                </div>
+            </div>
+</center>
+    </body>
+</html>

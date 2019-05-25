@@ -4,12 +4,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
     <script src="./js/logout.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
 
@@ -20,31 +23,31 @@
             list-style: none;
         }
 
-            ul.tabs li {
-                background: none;
-                color: #222;
-                display: inline-block;
-                padding: 5px 5px;
-                cursor: pointer;
-                font-weight: bold;
-                font-size: x-large;
-                width: 501px;
-                height: 45px;
-            }
+        ul.tabs li {
+            background: none;
+            color: #222;
+            display: inline-block;
+            padding: 5px 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: x-large;
+            width: 501px;
+            height: 45px;
+        }
 
-                ul.tabs li.current {
-                    background: #ededed;
-                    color: #222;
-                }
+        ul.tabs li.current {
+            background: #ededed;
+            color: #222;
+        }
 
         .tab-content {
             display: none;
             background: #ededed;
         }
 
-            .tab-content.current {
-                display: inherit;
-            }
+        .tab-content.current {
+            display: block;
+        }
 
         .ndisplay {
             display: none;
@@ -56,6 +59,9 @@
 
         .btn {
             cursor: pointer;
+        }
+        .ui-resizable-helper {
+            border: 2px dotted #00F;
         }
 
         #mask {
@@ -71,18 +77,21 @@
             display: none;
             position: absolute;
             z-index: 2;
-            float: center;
             background: #ededed;
-            text-align: left"
+            text-align: left;
         }
 
         #popGuide2 {
             display: none;
             position: absolute;
             z-index: 2;
-            float: center;
             background: #ededed;
-            text-align: left"
+            text-align: left;
+        }
+
+        ::-webkit-scrollbar {
+            display: none !important;
+            // 윈도우 크롬 등
         }
     </style>
 
@@ -91,7 +100,7 @@
         var url = window.location.href;
         var istab1 = true;
 
-        window.onload = function () {
+        $(document).ready(function () {
             var uid;
             var sub1 = document.getElementById("sub1");
             var sub2 = document.getElementById("sub2");
@@ -123,7 +132,6 @@
                     invalid();
                 }
             });
-
             $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
             $("#popGuide1").css({ 'left': $(document).width() / 2 - $("#popGuide1").width() / 2, 'top': 0 });
             $("#popGuide2").css({ 'left': $(document).width() / 2 - $("#popGuide2").width() / 2, 'top': $(document).height() / 2 - $("#popGuide2").height() / 2 });
@@ -162,7 +170,16 @@
                     }
                     $("#ntext").html(oldNtext);
                     link.value = oldLink;
-
+                    $(".resizable").resizable({ aspectRatio: true, helper: "ui-resizable-helper", maxWidth: 950, minWidth: 50 });
+                    $("#ntext").sortable({
+                        cancel: "div",
+                        revert: true
+                    });
+                    $(".resizable").draggable({
+                        connectToSortable: "#ntext",
+                        helper: "orginal",
+                        revert: "invalid"
+                    });
                     if (istab1 == false) {
                         document.getElementById("tab2").click();
                         btn2.click();
@@ -174,20 +191,22 @@
                 if (isSeen == false) {
                     $("#ptext").removeClass("ndisplay");
                     $("#ptext").addClass("tdisplay");
-                    $("#ntext").removeClass("tdisplay");
-                    $("#ntext").addClass("ndisplay");
+                    $("#nntext").removeClass("tdisplay");
+                    $("#nntext").addClass("ndisplay");
                     $("#itext").removeClass("tdisplay");
                     $("#itext").addClass("ndisplay");
                     $("#ptext").html($("#ntext").html());
+                    $(".selector").resizable("destory");
                     $(this).text("수정하기");
                     isSeen = true;
                 } else {
-                    $("#ntext").removeClass("ndisplay");
-                    $("#ntext").addClass("tdisplay");
+                    $("#nntext").removeClass("ndisplay");
+                    $("#nntext").addClass("tdisplay");
                     $("#itext").removeClass("ndisplay");
                     $("#itext").addClass("tdisplay");
                     $("#ptext").removeClass("tdisplay");
                     $("#ptext").addClass("ndisplay");
+                    $(".resizable").resizable();
                     $(this).text("미리보기");
                     isSeen = false;
                 }
@@ -202,6 +221,12 @@
                 }
             }
             sub1.onclick = function () {
+                var resimgs = document.getElementsByClassName("resizable");
+                for (i = 0; i < resimgs.length; i++) {
+                    while (resimgs[i].childNodes.length > 1) {
+                        resimgs[i].removeChild(resimgs[i].lastElementChild);
+                    }
+                }
                 firebase.database().ref('/').child(uid).child("card").child(key).child("wiki").set({
                     ntext: $("#ntext").html(),
                     link: oldLink,
@@ -258,15 +283,31 @@
 
             $("#ilinksub").click(function () {
                 var isrc = document.getElementById("ilink").value;
+                var iddiv = document.createElement('div');
                 var idiv = document.createElement('div');
+                idiv.className = "resizable";
+                idiv.contentEditable = false;
+                idiv.style = "padding: 0px; width: 500px; height: auto; display: inline-block;";
                 var iimg = document.createElement('img');
+                iimg.style = "width: 500px; height: auto;"
                 iimg.src = isrc;
-                iimg.style = "width:500px; height:auto;";
                 idiv.appendChild(iimg);
-                ntext.appendChild(idiv);
+                iimg.style = "width: 100%; height: 100%";
+                iddiv.appendChild(idiv);
+                ntext.appendChild(iddiv);
                 ntext.scrollTop = ntext.scrollHeight;
+                $(".resizable").resizable({ aspectRatio: true, helper: "ui-resizable-helper", maxWidth: 950, minWidth: 50 });
+                $("#ntext").sortable({
+                    cancel: "div",
+                    revert: true
+                });
+                $(".resizable").draggable({
+                    connectToSortable: "#ntext",
+                    helper: "orginal",
+                    revert: "invalid"
+                });
             });
-        }
+        });
     </script>
 </head>
 
@@ -290,32 +331,33 @@
   <div id = "popGuide1">
     <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
     <div></div>
-    <img src="./pictures/guide3.png" style = "width: 700px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
+    <img src="./pictures/guide3.png" style = "width: 700px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
   </div>
   <div id = "popGuide2">
     <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
     <div></div>
-    <img src="./pictures/guide4.png" style = "width: 1000px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
+    <img src="./pictures/guide4.png" style = "width: 1000px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
   </div>
   <div id = "mask"></div>
 
-
   <center>
-  <div "width: 1006px;">
-    <ul class="tabs"">
-      <li class="tab-link current" id = "tab1" data-tab="tab-1" style = "position: relative;"> 상세설명 <button id = "guidetab-1" class="btn btn-dark tab-content current" style = "background-color: black; position: absolute; left: 400px;"> 가이드 </button> </li>
-      <li class="tab-link" id = "tab2" data-tab="tab-2" style = "position: relative;"> 동영상 링크 <button id = "guidetab-2" class="btn btn-dark tab-content" style = "background-color: black; position: absolute; left: 400px;"> 가이드 </button> </li>
+  <div>
+    <ul class="tabs">
+      <li class="tab-link current" id = "tab1" data-tab="tab-1" style = "position: relative;"> 상세설명 <button id = "guidetab-1" class="btn btn-dark tab-content current" style = "background-color: black; position: absolute; left: 400px; top: 5px;"> 가이드 </button> </li>
+      <li class="tab-link" id = "tab2" data-tab="tab-2" style = "position: relative;"> 동영상 링크 <button id = "guidetab-2" class="btn btn-dark tab-content" style = "background-color: black; position: absolute; left: 400px; top: 5px;"> 가이드 </button> </li>
     </ul>
     
     <div id = "tab-1" class="tab-content current" style = "width: 1006px; min-height: 644px;">
       
       <div style = "height: 25px;"> </div>
       <div id = "ptext" class = "ndisplay" style = "width: 956px; min-height: 544px; text-align: left; margin-bottom: 0px; padding: 5px; font-size: 16px; border: 1px solid black; background-color: #f8f8f8;"></div>
-      <div id = "ntext" class = "tdisplay" style="text-align: left; width: 956px; height: 480px; border: 1px solid #AAAAAA; overflow-y: scroll; background-color: white; padding: 5px;" contenteditable="true"></div>
+      <div id="nntext" class = "tdisplay" style=" width: 956px; height: 960px; text-align: left;">
+        <div id = "ntext" style="position: absolute; text-align: left; width: 956px; height: 960px; border: 1px solid #AAAAAA; overflow-x: hidden; overflow-y: scroll; background-color: white; padding: 5px;" contenteditable="true"></div>
+      </div>
       <div id="itext" class="tdisplay" style="margin-top:10px;">
-          <a style="font-weight:bold; font-size: large;">이미지 링크 :</a> &nbsp;
-          <input type="text" id="ilink" style="width: 700px;" placeholder='추가할 이미지 링크(예: http://...)를 입력해주세요.(현재는 로컬 파일 업로드가 안됩니다.)' /> &nbsp;
-          <button class="btn btn-secondary"id="ilinksub" style="margin-bottom:5px;"> 추가 </button>
+      <a style="font-weight:bold; font-size: large;">이미지 링크 :</a> &nbsp;
+      <input type="text" id="ilink" style="width: 700px;" placeholder='추가할 이미지 링크(예: http://...)를 입력해주세요.(현재는 로컬 파일 업로드가 안됩니다.)' /> &nbsp;
+      <button class="btn btn-secondary"id="ilinksub" style="margin-bottom:5px;"> 추가 </button>
       </div>
       <div style = "height: 11px;"> </div>
       <a id = "btn1" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> &nbsp;
@@ -329,7 +371,7 @@
         <iframe id = "vid" width="956" height="538" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <div style = "height: 17px;"> </div>
-      <h3 style = "font-weight: bold;"> 동영상 주소 : &nbsp; <input style = "width: 520px; padding-left: 5px; font-size: large;" type = "text" id = "link" placeholder = "예: https://www.youtube.com/watch?v=xxxxxxxxxxx"> </input> &nbsp;
+      <h3 style = "font-weight: bold;"> 동영상 주소 : &nbsp; <input style = "width: 520px; padding-left: 5px; font-size: large;" type = "text" id = "link" placeholder = "예: https://www.youtube.com/watch?v=xxxxxxxxxxx"/> &nbsp;
       <a id = "btn2" class="btn btn-danger btn-lg" style = "color: white"> 미리보기 </a> &nbsp;
       <a id = "sub2" class="btn btn-primary btn-lg" style = "color: white"> 저장 </a> </h3>
       <div style = "height: 5px;"> </div>
@@ -337,7 +379,6 @@
   </div>
   </center>
   
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
