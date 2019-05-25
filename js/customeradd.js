@@ -71,6 +71,9 @@ function readFromDatabaseMenu(uid, new_val){
   }).then(function(){
     $(document).on("click", ".btn-success", function(){
       var name = $("#exampleInputEmail1").val();
+      if(name.includes(".") || name.includes("#") || name.includes("$") || name.includes("[") || name.includes("]")){
+        alert("이름에 .#$[] 의 특수문자를 넣지말아주세요")
+      }
       var address = $("#exampleInputPassword1").val();
       var status = 2; // 0:VVIP 1:VIP 2:NEW
       var rec_menu = [];
@@ -107,12 +110,14 @@ firebase.auth().onAuthStateChanged(function(user) {
      var myUID = firebase.auth().currentUser.uid;
      readFromDatabaseMenu(myUID);
      $(document).ready(function(){
+       /*
        $("#menu_btn").on("click",function(){
          var menu = $("#menu_hold").val();
          $("#menus").html("");
          writeToDatabase_ver2(myUID, menu);
          $("#menu_hold").val("");
        })
+       */
      })
 
   } else {
