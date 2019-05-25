@@ -58,12 +58,14 @@
                 var menus = [];
                 var page = 1;
                 var sdata = "";
+                var issearch = false;
 
 
                 if (url.indexOf("#") != -1) { url = url.split("#")[0]; }
                 if (url.indexOf("?") != -1) {
                     page = url.split("?")[1];
                     if (url.split("?").length == 3) {
+                        issearch = true;
                         sdata = decodeURI(url.split("?n=")[1]);
                     }
                     if (page.indexOf("page=") == 0) {
@@ -224,11 +226,60 @@
                             var cardId = "c" + String((i - 1) % 3 + 1);
                             document.getElementById(cardId).appendChild(divcard);
                         }
-                        for (i = 1; i <= maxp && i <= 5; i++) {
-                            var lid = "#l" + String(i);
-                            $(lid).removeClass("disabled");
-                            $(lid).children()[0].style += { 'background': 'white' };
-                            $(lid).children()[0].href = "./madeCard.html?page=" + String(i);
+                        var ppp = 5 * parseInt((page - 1) / 5);
+                        for (i = ppp + 1; i <= ppp + 5; i++) {
+                            var lid = "#l" + String((i - 1) % 5 + 1);
+                            $(lid + "> a").text(String(i));
+                            if (i <= maxp) {
+                                $(lid).removeClass("disabled");
+                                $(lid).children()[0].style += { 'background': 'white' };
+                                if (issearch) {
+                                    $(lid).children()[0].href = "./madeCard.html?page=" + String(i) + "?n=" + sdata;
+
+                                } else {
+                                    $(lid).children()[0].href = "./madeCard.html?page=" + String(i);
+                                }
+                            }
+                        }
+                        if (page > 5) {
+                            $("#pprev").removeClass("disabled");
+                            $("#pprev").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#pprev").children()[0].href = "./madeCard.html?page=1?n=" + sdata;
+
+                            } else {
+                                $("#pprev").children()[0].href = "./madeCard.html?page=1";
+                            }
+                        }
+                        if (page > 5) {
+                            $("#prev").removeClass("disabled");
+                            $("#prev").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#prev").children()[0].href = "./madeCard.html?page=" + String(5 * parseInt((page - 1) / 5)) +"?n=" + sdata;
+
+                            } else {
+                                $("#prev").children()[0].href = "./madeCard.html?page=" + String(5*parseInt((page-1)/5));
+                            }
+                        }
+                        if (page <= 5 * parseInt((maxp - 1) / 5)) {
+                            $("#next").removeClass("disabled");
+                            $("#next").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#next").children()[0].href = "./madeCard.html?page=" + String(5 * parseInt((page - 1) / 5) + 6) + "?n=" + sdata;
+
+                            } else {
+                                $("#next").children()[0].href = "./madeCard.html?page=" + String(5 * parseInt((page - 1) / 5) + 6);
+                            }
+                        }
+                        if (page <= 5 * parseInt((maxp - 1) / 5)) {
+                            $("#nnext").removeClass("disabled");
+                            $("#nnext").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#nnext").children()[0].href = "./madeCard.html?page=1" + String(maxp) + "?n=" + sdata;
+
+                            } else {
+                                $("#nnext").children()[0].href = "./madeCard.html?page=" + String(maxp);
+                            }
                         }
                         $("#l" + String(page)).addClass("active");
                     });
@@ -317,14 +368,14 @@
                         </nav>
                         <nav>
                             <ul class="pagination justify-content-start" style="margin: auto; color: black;">
-                                <li class="page-item disabled">
+                                <li class="page-item disabled" id="pprev">
                                     <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> << </a>
                                 </li>
-                                <li class="page-item disabled">
+                                <li class="page-item disabled" id="prev">
                                     <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> < </a>
                                 </li>
                                 <li class="page-item disabled" id="l1">
-                                    <a class="page-link" style="color:black" ; background: #ddd;>1</a>
+                                    <a class="page-link" style="color:black; background: #ddd;">1</a>
                                 </li>
                                 <li class="page-item disabled" id="l2">
                                     <a class="page-link" style="color:black; background: #ddd;">2</a>
@@ -338,11 +389,11 @@
                                 <li class="page-item disabled" id="l5">
                                     <a class="page-link" style="color:black; background: #ddd;">5</a>
                                 </li>
-                                <li class="page-item disabled">
-                                    <a class="page-link" style="font-weight: bold; color:gray; background: #dddddd;"> > </a>
+                                <li class="page-item disabled" id="next">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> > </a>
                                 </li>
-                                <li class="page-item disabled">
-                                    <a class="page-link" style="font-weight: bold; color:gray; background: #dddddd;"> >> </a>
+                                <li class="page-item disabled" id="nnext">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> >> </a>
                                 </li>
                             </ul>
                         </nav>
