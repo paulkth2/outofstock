@@ -11,7 +11,7 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 */
-function writeToDatabase(uid, name, address, rec_menu, status, last_date){
+function writeToDatabase_1(uid, name, address, rec_menu, status, last_date){
   var newkey = firebase.database().ref(uid).child("customer").child(name).set({
     address: address,
     menu: rec_menu,
@@ -69,7 +69,7 @@ function readFromDatabaseMenu(uid, new_val){
     localStorage.setItem("cur_value", tmp_list)
     */
   }).then(function(){
-    $(document).on("click", ".btn-success", function(){
+    $(document).on("click", "#add", function(){
       var name = $("#exampleInputEmail1").val();
       if(name.includes(".") || name.includes("#") || name.includes("$") || name.includes("[") || name.includes("]")){
         alert("이름에 .#$[] 의 특수문자를 넣지말아주세요")
@@ -92,14 +92,15 @@ function readFromDatabaseMenu(uid, new_val){
       var month = today.getMonth() + 1;
       var date = today.getDate();
       var ymd = String(month)+"-"+String(date)+"-"+String(year);
-      writeToDatabase(uid, name, address, menu_str, status, ymd)
-      alert("등록완료")
+      writeToDatabase_1(uid, name, address, menu_str, status, ymd);
+      alert("등록완료");
       $("#exampleInputEmail1").val("");
       $("#exampleInputPassword1").val("");
       $(".favorite_food").val("");
       $("#stat0").prop("checked",false);
       $("#stat1").prop("checked",false);
-      $("#stat2").prop("checked",true);
+      $("#stat2").prop("checked", true);
+      location.reload();
     })
   })
 }
@@ -141,4 +142,17 @@ $(document).ready(function(){
     $("#stat1").prop("checked",false);
     $("#stat2").prop("checked",true);
   })
+  $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+  $("#addcustomer").css({ 'left': $(document).width() / 2 - $("#addcustomer").width() / 2, 'top': $(document).height() / 2 - $("#addcustomer").height() / 2 });
+
+  $("#btn_add").click(function () {
+    $("#addcustomer").show();
+    $("#mask").show();
+    return false;
+  });
+  $("#addcustomer > .btn-danger").click(function () {
+    $("#addcustomer").hide();
+    $("#mask").hide();
+    return false;
+  });
 })
