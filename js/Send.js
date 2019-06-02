@@ -249,7 +249,7 @@ $(document).ready(function(){
       var subject = "이 메뉴를 추천드려요: " + localStorage.getItem("card_title");
       var body = ""+localStorage.getItem("sending_card");
       var body_p = "아래 링크를 들어가 이 메뉴 재료를 자세히 알아보세요->"
-      var link_body = "https://outofstockcs374.firebaseapp.com/forcustomers.html?" + firebase.auth().currentUser.uid + "?" + localStorage.getItem("card_idx")
+      var link_body = "https://outofstockcs374.firebaseapp.com/forcustomer.html?" + firebase.auth().currentUser.uid + "?" + localStorage.getItem("card_idx")
       var link = 'mailto:'+address+'?subject=' +subject+ "&body=" + body_p + link_body;
       window.location.href = link;
       //alert("보내기 완료")
