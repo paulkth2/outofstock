@@ -51,6 +51,7 @@ function register(){
     console.log("check3");
 
     alert("회원가입이 완료되었습니다. 로그인 해주세요.")
+    location.reload();
   }).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
