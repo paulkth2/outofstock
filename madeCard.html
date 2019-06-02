@@ -96,10 +96,6 @@
                     }
                 });
 
-                $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
-                $("#popGuide").css({ 'left': $(document).width() / 2 - $("#popGuide").width() / 2, 'top': $(document).height() / 2 - $("#popGuide").height() / 2 });
-                $("#cardExplain").css({ 'left': $(document).width() / 2 - $("#cardExplain").width() / 2, 'top': $(document).height() / 2 - $("#cardExplain").height() / 2 });
-
                 function invalid() {
                     alert("비정상적인 접근입니다.");
                     history.back();
@@ -330,12 +326,16 @@
                         ing2.value = myValue["ing2"];
                         ing3.value = myValue["ing3"];
                         text.value = myValue["text"];
+                        $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                        $("#cardExplain").css({ 'left': $(document).width() / 2 - $("#cardExplain").width() / 2, 'top': $(document).height() / 2 - $("#cardExplain").height() / 2 });
                         $("#cardExplain").show();
                         $("#mask").show();
                     });
                 }
 
                 $("#guideBtn").click(function () {
+                    $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                    $("#popGuide").css({ 'left': $(document).width() / 2 - $("#popGuide").width() / 2, 'top': $(document).height() / 2 - $("#popGuide").height() / 2 });
                     $("#popGuide").show();
                     $("#mask").show();
                     return false;
