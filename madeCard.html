@@ -34,6 +34,13 @@
                 background: #ededed;
                 text-align: left;
             }
+            #cardExplain {
+                display: none;
+                position: absolute;
+                z-index: 2;
+                background: #ededed;
+                text-align: left;
+            }
             .ui-autocomplete {
                 max-height: 400px;
                 width: 200px;
@@ -59,6 +66,12 @@
                 var page = 1;
                 var sdata = "";
                 var issearch = false;
+                var menu;
+                var ing1;
+                var ing2;
+                var ing3;
+                var text;
+                var key;
 
 
                 if (url.indexOf("#") != -1) { url = url.split("#")[0]; }
@@ -85,6 +98,7 @@
 
                 $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
                 $("#popGuide").css({ 'left': $(document).width() / 2 - $("#popGuide").width() / 2, 'top': $(document).height() / 2 - $("#popGuide").height() / 2 });
+                $("#cardExplain").css({ 'left': $(document).width() / 2 - $("#cardExplain").width() / 2, 'top': $(document).height() / 2 - $("#cardExplain").height() / 2 });
 
                 function invalid() {
                     alert("비정상적인 접근입니다.");
@@ -206,10 +220,11 @@
                             var itext5 = document.createTextNode("보내기");
                             a2.appendChild(itext5);
                             p3.appendChild(a2);
-                            var a1 = document.createElement('a');
+                            var a1 = document.createElement('button');
                             a1.className = "btn btn-secondary";
                             a1.style = "float: right; margin-left: 5px;";
-                            a1.href = "./card_explain.html?key=" + cards[cardIndex - i];
+                            a1.id = "exp_" + String(x);
+                            a1.data = cards[cardIndex - i];
                             var itext4 = document.createTextNode("설명 수정");
                             a1.appendChild(itext4);
                             p3.appendChild(a1);
@@ -285,9 +300,39 @@
                     });
                 }
 
+                function writeTD() {
+                    firebase.database().ref('/').child(uid).child("card").child(key).child("explain").set({
+                        menu: menu.value,
+                        ing1: ing1.value,
+                        ing2: ing2.value,
+                        ing3: ing3.value,
+                        text: text.value
+                    });
+                }
+
                 function delFD(cardid) {
                     firebase.database().ref('/').child(uid).child("card").child(cardid).remove();
                     location.href = url;
+                }
+
+                function expCard(cardid) {
+                    key = cardid;
+                    menu = document.getElementById("menu");
+                    ing1 = document.getElementById("ing1");
+                    ing2 = document.getElementById("ing2");
+                    ing3 = document.getElementById("ing3");
+                    text = document.getElementById("text");
+
+                    return firebase.database().ref('/').child(uid).child("card").child(key).child("explain").once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        menu.value = myValue["menu"];
+                        ing1.value = myValue["ing1"];
+                        ing2.value = myValue["ing2"];
+                        ing3.value = myValue["ing3"];
+                        text.value = myValue["text"];
+                        $("#cardExplain").show();
+                        $("#mask").show();
+                    });
                 }
 
                 $("#guideBtn").click(function () {
@@ -300,10 +345,29 @@
                     $("#mask").hide();
                     return false;
                 });
+                $("#cardExplain > button").click(function () {
+                    $("#cardExplain").hide();
+                    $("#mask").hide();
+                    return false;
+                });
+                $("#save").click(function () {
+                    if (menu.value == "") {
+                        alert("메뉴를 입력해주세요.");
+                        return;
+                    }
+                    else if (ing1.value == "" && ing2.value == "" && ing3.value == "") {
+                        alert("재료를 1개 이상 입력해주세요.");
+                        return;
+                    }
+                    writeTD();
+                    location.href = url;
+                });
 
                 $("#searchbtn").click(function () {
                     var sval = $("#menusearch")[0].value;
-                    location.href = "./madeCard.html?page=1?n=" + sval;
+                    if (sval != 0) {
+                        location.href = "./madeCard.html?page=1?n=" + sval;
+                    }
                     return false;
                 });
                 $("#menusearch").keydown(function (event) {
@@ -332,6 +396,19 @@
                     delFD($(this)[0].data);
                     return false;
                 });
+
+                $(document).on("click", "#exp_1", function () {
+                    expCard($(this)[0].data);
+                    return false;
+                });
+                $(document).on("click", "#exp_2", function () {
+                    expCard($(this)[0].data);
+                    return false;
+                });
+                $(document).on("click", "#exp_3", function () {
+                    expCard($(this)[0].data);
+                    return false;
+                });
             });
         </script>
     </head>
@@ -356,8 +433,25 @@
         <div id="popGuide">
             <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
             <div></div>
-            <img src="./pictures/guide1.png" style="width: 500px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;"> </img>
+            <img src="./pictures/guide1.png" style="width: 500px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
         </div>
+        <div id="cardExplain">
+            <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+            <div></div>
+            <div style="width: 600px; background-color: white; text-align: left; padding: 12px;">
+                <h2>
+                    <a style="font-weight: bold;"> 메뉴: </a> &nbsp; <input id="menu" type="text" style="width: 360px;" placeholder="메뉴 이름">
+                </h2>
+                <div style="text-align: left;">
+                    <p> <a style="font-weight: bold"> 재료: </a> &nbsp; <input type="text" id="ing1" style="width: 150px" placeholder="재료 1"> &nbsp; <input type="text" id="ing2" style="width: 150px" placeholder="재료 2"> &nbsp; <input type="text" id="ing3" style="width: 150px" placeholder="재료 3"> </p>
+                    <textarea id="text" placeholder="설명을 써주세요." style="width: 574px; height: 480px; margin-bottom: 10px; padding-left: 5px; resize: none; font-size: 20px"></textarea>
+                </div>
+                <div style="text-align: center; color: white; margin-top: 1px; margin-bottom: 5px;">
+                    <a id="save" class="btn btn-lg btn-primary mx-1" style="cursor:pointer"> 저장 </a>
+                </div>
+            </div>
+        </div>
+
         <div id="mask"></div>
         <div class="container-fluid">
             <div class="row">
