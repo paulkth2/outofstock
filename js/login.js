@@ -78,6 +78,12 @@ function login(){
 
   });
 }
+function logsub() {
+    if (event.keyCode == 13) {
+        login();
+        return false;
+    }
+}
 /*
 * working UI part of code
 *

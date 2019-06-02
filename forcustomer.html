@@ -18,6 +18,34 @@
                 border-collapse: collapse;
                 margin: 0px;
             }
+            .star_rating {
+                font-size: 0;
+                letter-spacing: -4px;
+            }
+
+            .star_rating a {
+                font-size: 22px;
+                letter-spacing: 0;
+                display: inline-block;
+                margin-left: 5px;
+                color: #f8f8f8;
+                text-decoration: none;
+            }
+
+            .star_rating a:first-child {
+                margin-left: 0;
+            }
+            .star_rating a.on {
+                color: gold;
+            }
+            .star_rated a:not(.on) {
+                color: #f8f8f8;
+                cursor: text;
+            }
+            .star_rated a.on {
+                color: gold;
+                cursor: text;
+            }
         </style>
         <script>
             var url = window.location.href;
@@ -37,6 +65,8 @@
                 var uid;
                 var key;
                 var card;
+                var comments;
+                var commentkey = "comment1";
                 
                 if (url.indexOf("?") != -1 && url.split("?").length == 3) {
                     uid = url.split("?")[1];
@@ -73,10 +103,12 @@
                 }
 
                 function readFD() {
-                    return firebase.database().ref('/').child(uid).child("card").once('value', function (snapshot) {
+                    return firebase.database().ref('/').child(uid).child("card").on('value', function (snapshot) {
                         var myValue = snapshot.val();
                         var keys = Object.keys(myValue);
                         var valid = false;
+
+                        initializeComment();
 
                         for (var i = 0; i < keys.length; i++) {
                             var cardid = keys[i];
@@ -91,6 +123,13 @@
                             invalid();
                         }
                     });
+                }
+
+                function initializeComment() {
+                    var commentpage = document.getElementById("theComment");
+                    while (commentpage.childNodes.length > 7) {
+                        commentpage.removeChild(commentpage.lastElementChild);
+                    }
                 }
 
                 function makepage() {
@@ -111,10 +150,92 @@
                         vid.src = "https://www.youtube.com/embed/" + card["wiki"]["link"].split("=")[1];
                         vid.style = "display: block;"
                     }
+                    if (card["comment"] != undefined) {
+                        $("#defaultcomment").hide();
+                        comments = card["comment"];
+                        var commentList = Object.keys(comments).sort(function (a, b) {
+                            return Number(a.split("comment")[1]) - Number(b.split("comment")[1]);
+                        });
+                        commentkey = "comment" + String(Number(commentList[commentList.length - 1].split("comment")[1]) + 1);
+                        var clength = commentList.length;
+                        document.getElementById("nreview").innerHTML = "이 음식에 대한 " + clength + "개의 후기가 남겨져 있습니다.";
+                        for (var i = 0; i < clength; i++) {
+                            var comment = commentList[clength - i - 1];
+                            makecomment(comment);
+                        }
+                    }
                 }
-                
+                function makecomment(comment) {
+                    var div1 = document.createElement("div");
+                    div1.style = "background-color: #ededed; padding: 0px 10px 0px 10px; margin-bottom: 5px;";
+                    var p1 = document.createElement("p");
+                    p1.className = "star_rated";
+                    p1.style = "margin-bottom: 0px;";
+                    var s0 = document.createElement("a");
+                    s0.style = "font-size: 18px;";
+                    s0.innerHTML = "★";
+                    for (var i = 0; i < 5; i++) {
+                        var s = s0.cloneNode(true);
+                        if (i < Number(comments[comment]["star"])) {
+                            s.className = "on";
+                        }
+                        p1.appendChild(s);
+                    }
+                    var div2 = document.createElement('div');
+                    div2.innerText = comments[comment]["text"];
+                    var div3 = document.createElement('div');
+                    div3.style = "text-align: right;";
+                    div3.innerText = comments[comment]["time"];
+                    div1.appendChild(p1);
+                    div1.appendChild(div2);
+                    div1.appendChild(div3);
+                    document.getElementById("theComment").appendChild(div1);
+                }
+
+                function to2(n) {
+                    if (String(n).length == 1) {
+                        return "0" + String(n);
+                    }
+                    return String(n);
+                }
+                $(document).on("click", "#commentSub", function () {
+                    var n = -1;
+                    var ctext = document.getElementById("ctext");
+                    var d = new Date();
+                    var dtime;
+
+                    if (ctext.value == "") {
+                        return;
+                    }
+                    for (var i = 0; i < 6; i++) {
+                        if ($(".star_rating").children()[i].classList.length == 0) {
+                            break;
+                        }
+                        n++;
+                    }
+                    dtime = d.getFullYear() + '-' + to2(d.getMonth() + 1) + '-' + to2(d.getDate()) + ' ' + to2(d.getHours()) + ':' + to2(d.getMinutes()) + ':' + to2(d.getSeconds());
+                    console.log(dtime);
+                    firebase.database().ref('/').child(uid).child("card").child(key).child("comment").child(commentkey).set({
+                        text: ctext.value,
+                        star: n,
+                        time: dtime
+                    });
+                    ctext.value = "";
+                    return false;
+                });
                 $(document).on("click", "#goback", function () {
-                    self.close();
+                    $("#theCard").hide();
+                    $("#theComment").show();
+                    return false;
+                });
+                $(document).on("click", "#return", function () {
+                    $("#theCard").show();
+                    $("#theComment").hide();
+                    return false;
+                });
+                $(".star_rating a").click(function () {
+                    $(this).parent().children("a").removeClass("on");
+                    $(this).addClass("on").prevAll("a").addClass("on");
                     return false;
                 });
             });
@@ -122,7 +243,7 @@
     </head>
     <body style="background-color: #ededed">
         <center>
-            <div style="text-align: center; width: 996px; background-color: #ccc; padding: 20px; padding-bottom: 10px;">
+            <div id="theCard" style="text-align: center; width: 996px; background-color: #ccc; padding: 20px; padding-bottom: 10px;">
                 <div id="mtext" style="text-align: center; background-color: #f8f8f8;">
                     <h1 id="menu" style="font-weight: bold; padding: 10px; margin: auto;"></h1>
                 </div>
@@ -149,10 +270,33 @@
                 <div id="ptext" style="width: 956px; text-align: left; min-height: 200px; display: inline-block; background-color: #f8f8f8; padding: 5px;">
                     <iframe id="vid" style="display: none;" width="956" height="538" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
-                <div style="padding-top: 10px;">
-                    <button class="btn btn-danger btn-lg" id="goback"> 나가기 </button>
+                <div style="padding-top: 10px; padding-bottom: 5px;">
+                    <a id="nreview">아직 이 음식에 대한 후기가 없습니다. 후기를 남겨주세요.</a> <br>
+                    <button class="btn btn-secondary btn-lg" id="goback" style="margin-top: 5px;"> &nbsp;&nbsp;리뷰&nbsp;&nbsp; </button>
                 </div>
             </div>
-</center>
+            <div id="theComment" style="display: none; text-align: left; width: 680px; background-color: #ddd; padding: 10px 20px 10px 20px;">
+                <div>
+                    <button class="btn btn-secondary" id="return" style="background-color: #f8f8f8; width: 100%; height: 40px; color: black; margin-bottom: 10px;">돌아가기</button>
+                </div>
+                <div style="height: 180px; margin-bottom: 10px">
+                    <textarea id ="ctext" style="resize: none; width: 100%; height: 120px;" placeholder="댓글을 작성해주세요."></textarea>
+                    <p class="star_rating" style="float: right;">
+                        <a href="#" class="on" style="font-size: 36px;">&nbsp;&nbsp;</a>
+                        <a href="#" class="on" style="font-size: 36px;">★</a>
+                        <a href="#" class="on" style="font-size: 36px;">★</a>
+                        <a href="#" class="on" style="font-size: 36px;">★</a>
+                        <a href="#" class="on" style="font-size: 36px;">★</a>
+                        <a href="#" class="on" style="font-size: 36px;">★&nbsp;&nbsp;</a>
+                        <button id="commentSub" class="btn btn-success btn-lg" style="margin-bottom: 15px;"> &nbsp;&nbsp;입력&nbsp;&nbsp; </button>
+                    </p>
+                </div>
+                <div id="defaultcomment" style="background-color: #ededed; padding: 10px; margin-bottom: 5px;">
+                    <center>
+                        댓글이 없습니다. 첫 댓글을 남겨주세요!
+                    </center>
+                </div>
+            </div>
+        </center>
     </body>
 </html>
