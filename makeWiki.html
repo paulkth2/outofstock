@@ -133,7 +133,7 @@
             });
             $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
             $("#popGuide1").css({ 'left': $(document).width() / 2 - $("#popGuide1").width() / 2, 'top': 0 });
-            $("#popGuide2").css({ 'left': $(document).width() / 2 - $("#popGuide2").width() / 2, 'top': $(document).height() / 2 - $("#popGuide2").height() / 2 });
+            
             function invalid() {
                 alert("비정상적인 접근입니다.");
                 history.back();
@@ -260,6 +260,8 @@
                 $(this).addClass('current');
                 $("#" + tab_id).addClass('current');
                 $("#guide" + tab_id).addClass('current');
+                $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                $("#popGuide2").css({ 'left': $(document).width() / 2 - $("#popGuide2").width() / 2, 'top': $(document).height() / 2 - $("#popGuide2").height() / 2 });
             });
 
             $("#guidetab-1").click(function () {
