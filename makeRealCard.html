@@ -21,6 +21,9 @@
             z-index: 1;
             background-color: rgba(0,0,0,0.5);
         }
+        img {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -49,34 +52,20 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6" style="text-align: center">
-                    <h4>
-                        메뉴 사진을 선택해주세요.<br>
-                                      <h6>
-                                          메뉴 이름 <input type="text" id="menu-name" placeholder="메뉴 이름을 입력하세요." /><br>
-                                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                          <input type="file" id="menuimage" class="file-select" accept="image/*" /><br>
-                                      </h6><br>
-                    </h4><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="550" id="mainpic" />
+                    <h5> 메뉴 <input type="text" id="menu-name" placeholder="메뉴 이름을 입력하세요." /></h5>
+                    <input type="file" id="menuimage" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="550" id="mainpic" onclick="document.getElementById('menuimage').click();"/>
                 </div>
                 <div class="col-md-6">
-                    <h6>
-                        재료1 <input type="text" id="1-name" placeholder="재료 이름을 입력하세요." /> <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="file" id="ingreimage1" class="file-select" accept="image/*" />
-                        <br>
-                    </h6><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient1" /><br><br>
-                    <h6>
-                        재료2 <input type="text" id="2-name" placeholder="재료 이름을 입력하세요." /> <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="file" id="ingreimage2" class="file-select" accept="image/*" />
-                        <br>
-                    </h6><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient2" /><br><br>
-                    <h6>
-                        재료3 <input type="text" id="3-name" placeholder="재료 이름을 입력하세요." /> <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="file" id="ingreimage3" class="file-select" accept="image/*" />
-                        <br>
-                    </h6><img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient3" /><br><br>
+                    <h6> 재료1 <input type="text" id="1-name" placeholder="재료 이름을 입력하세요." /></h6>
+                    <input type="file" id="ingreimage1" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient1" onclick="document.getElementById('ingreimage1').click();" /><br><br>
+                    <h6> 재료2 <input type="text" id="2-name" placeholder="재료 이름을 입력하세요." /> </h6>
+                    <input type="file" id="ingreimage2" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient2" onclick="document.getElementById('ingreimage2').click();" /><br><br>
+                    <h6> 재료3 <input type="text" id="3-name" placeholder="재료 이름을 입력하세요." /> </h6>
+                    <input type="file" id="ingreimage3" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient3" onclick="document.getElementById('ingreimage3').click();" /><br><br>
 
                 </div>
             </div>
