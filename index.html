@@ -40,9 +40,13 @@
     <div class="container py-5">
       <div class="row" style="">
         <div class="mx-auto col-lg-8 col-md-9 offset-md-1">
-          <h1 class="mb-4 display-4">Out of Stock Promotions</h1><h6>(이미 회원이시라면 우측 상단에서 로그인해주세요)</h6><br><br><br>
-          <p class="lead mb-5">고객에게 전하지 못한 이야기<br>고객에게 전하고 싶은 감동<br>고객과 함께 만들었던 추억<br><br>지금 바로 전해보세요</p><br><br> 
-          <!--<div id="firebaseui-auth-container"></div>-->
+          <div id="before">
+            <h1 class="mb-4 display-4">Out of Stock Promotions</h1><h6>(이미 회원이시라면 우측 상단에서 로그인해주세요)</h6><br><br><br>
+            <p class="lead mb-5">고객에게 전하지 못한 이야기<br>고객에게 전하고 싶은 감동<br>고객과 함께 만들었던 추억<br><br>지금 바로 전해보세요</p>
+            <!--<div id="firebaseui-auth-container"></div>-->
+            <div><button class ="btn btn-primary" onclick="document.getElementById('makeAccount').style = 'display: block'; $('#before').hide();"> 회원가입 </button></div>
+          </div>
+          <div id="makeAccount" style="display: none;">
             <div class="form-row">
               <div class="form-group col-md-3"> <h3>이메일</h3> </div>
               <div class="form-group col-md-9"> <input type="text" class="form-control" id="emailinput" placeholder="이메일을 입력하세요."> </div>
@@ -67,8 +71,8 @@
             <div class="form-group"> <input type="text" class="form-control" id="address" placeholder="주소를 입력하세요."> </div>
             <h3>영업시간</h3>
             <div class="form-group"> <textarea class="form-control" id="opertime" rows="6" placeholder="영업시간을 입력해주세요. &#10;&#10; 예)&#10; 평일 오전 11시 ~ 오후 10시 &#10; 주말 오후 1시 ~ 오후 10시"></textarea> </div> 
-            <button onclick="register()" class="btn btn-primary">회원가입하기</button>
-          
+            <button onclick="register()" class="btn btn-primary">가입하기</button>
+          </div>
         </div>
       </div>
     </div>
