@@ -67,7 +67,7 @@
                 var card;
                 var comments;
                 var commentkey = "comment1";
-                
+
                 if (url.indexOf("?") != -1 && url.split("?").length == 3) {
                     uid = url.split("?")[1];
                     key = url.split("?key=")[1];
@@ -79,7 +79,7 @@
                 startpage();
 
                 function invalid() {
-                    alert("비정상적인 접근입니다.");
+                    alert("Abnormal query.");
                     history.back();
                 }
 
@@ -158,7 +158,11 @@
                         });
                         commentkey = "comment" + String(Number(commentList[commentList.length - 1].split("comment")[1]) + 1);
                         var clength = commentList.length;
-                        document.getElementById("nreview").innerHTML = "이 음식에 대한 " + clength + "개의 후기가 남겨져 있습니다.";
+                        if (clength == 1 || clength == 0){
+                          document.getElementById("nreview").innerHTML = "There is " + clength + "comment.";
+                        }else{
+                          document.getElementById("nreview").innerHTML = "There are " + clength + "comments.";
+                        }
                         for (var i = 0; i < clength; i++) {
                             var comment = commentList[clength - i - 1];
                             makecomment(comment);
@@ -271,16 +275,16 @@
                     <iframe id="vid" style="display: none;" width="956" height="538" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
                 <div style="padding-top: 10px; padding-bottom: 5px;">
-                    <a id="nreview">아직 이 음식에 대한 후기가 없습니다. 후기를 남겨주세요.</a> <br>
-                    <button class="btn btn-secondary btn-lg" id="goback" style="margin-top: 5px;"> &nbsp;&nbsp;리뷰&nbsp;&nbsp; </button>
+                    <a id="nreview">There is no comment yet. Please leave your comment.</a> <br>
+                    <button class="btn btn-secondary btn-lg" id="goback" style="margin-top: 5px;"> &nbsp;&nbsp;Comment&nbsp;&nbsp; </button>
                 </div>
             </div>
             <div id="theComment" style="display: none; text-align: left; width: 680px; background-color: #ddd; padding: 10px 20px 10px 20px;">
                 <div>
-                    <button class="btn btn-secondary" id="return" style="background-color: #f8f8f8; width: 100%; height: 40px; color: black; margin-bottom: 10px;">돌아가기</button>
+                    <button class="btn btn-secondary" id="return" style="background-color: #f8f8f8; width: 100%; height: 40px; color: black; margin-bottom: 10px;">Back</button>
                 </div>
                 <div style="height: 180px; margin-bottom: 10px">
-                    <textarea id ="ctext" style="resize: none; width: 100%; height: 120px;" placeholder="댓글을 작성해주세요."></textarea>
+                    <textarea id ="ctext" style="resize: none; width: 100%; height: 120px;" placeholder="Please write a comment."></textarea>
                     <p class="star_rating" style="float: right;">
                         <a href="#" class="on" style="font-size: 36px;">&nbsp;&nbsp;</a>
                         <a href="#" class="on" style="font-size: 36px;">★</a>
@@ -288,12 +292,12 @@
                         <a href="#" class="on" style="font-size: 36px;">★</a>
                         <a href="#" class="on" style="font-size: 36px;">★</a>
                         <a href="#" class="on" style="font-size: 36px;">★&nbsp;&nbsp;</a>
-                        <button id="commentSub" class="btn btn-success btn-lg" style="margin-bottom: 15px;"> &nbsp;&nbsp;입력&nbsp;&nbsp; </button>
+                        <button id="commentSub" class="btn btn-success btn-lg" style="margin-bottom: 15px;"> &nbsp;&nbsp;Enter&nbsp;&nbsp; </button>
                     </p>
                 </div>
                 <div id="defaultcomment" style="background-color: #ededed; padding: 10px; margin-bottom: 5px;">
                     <center>
-                        댓글이 없습니다. 첫 댓글을 남겨주세요!
+                        There is no comment. Be the first one!!
                     </center>
                 </div>
             </div>
