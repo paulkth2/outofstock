@@ -135,7 +135,7 @@
                 function makepage() {
                     document.getElementById("menu").innerHTML = card["explain"]["menu"];
                     document.getElementById("ings").innerHTML = card["explain"]["ing1"] + "&nbsp;&nbsp;&nbsp;" + card["explain"]["ing2"] + "&nbsp;&nbsp;&nbsp;" + card["explain"]["ing3"];
-                    document.getElementById("text").innerHTML = card["explain"]["text"];
+                    document.getElementById("text").innerText = card["explain"]["text"];
                     document.getElementById("menuimg").src = card["main_image"]["src"];
                     document.getElementById("ing1img").src = card["sub_images"]["ing1"]["src"];
                     document.getElementById("ing2img").src = card["sub_images"]["ing2"]["src"];
