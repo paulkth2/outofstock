@@ -2,86 +2,122 @@
 <html>
 
 <head>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
-  <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
-  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+    <style>
+        #mask {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        #makeAccount {
+            width: 750px;
+            display: none;
+            position: absolute;
+            z-index: 2;
+            background: #ededed;
+            padding: 0px 10px 15px 10px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+            $("#makeAccount").css({ 'left': $(document).width() / 2 - $("#makeAccount").width() / 2, 'top': 10 });
+            $("#makeAccount > .btn-danger").click(function () {
+                $("#mask").hide();
+                $("#makeAccount").hide();
+            });
+        });
+    </script>
 </head>
 
 <body>
 
-  <script src="./js/login.js"></script>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-    <div class="container"> <a href="../index.html" style="color:teal; padding-right: 15px">KOR</a> <a class="navbar-brand" href="index.html">
-        <i class="fa d-inline fa-lg fa-stop-circle"></i>
-        <b>Out of Stock Promotions</b>
-      </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbar10">
-        <ul class="navbar-nav ml-auto">
-          <form>
-            <input type="text" id="email" placeholder="email">
-            <input type="password" id="pw" placeholder="password" onkeydown="logsub()">
-            <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="login()">Sign In</a>
-          </form>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <div class="py-5 text-center text-white h-100 align-items-center d-flex" style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, .75), rgba(0, 0, 0, .75)), url(https://static.pingendo.com/cover-bubble-dark.svg);  background-position: center center, center center;  background-size: cover, cover;  background-repeat: repeat, repeat;">
-    <div class="container py-5">
-      <div class="row" style="">
-        <div class="mx-auto col-lg-8 col-md-9 offset-md-1">
-          <div id="before">
-            <h1 class="mb-4 display-4">Out of Stock Promotions</h1><h6>(please sign in on the right upper corner)</h6><br><br><br>
-            <p class="lead mb-5">Stories to tranfer to the customers<br><br>Make
-               it right now!!</p>
-            <!--<div id="firebaseui-auth-container"></div>-->
-            <div><button class ="btn btn-primary" onclick="document.getElementById('makeAccount').style = 'display: block'; $('#before').hide();"> Sign up </button></div>
-          </div>
-          <div id="makeAccount" style="display: none;">
-            <div class="form-row">
-              <div class="form-group col-md-3"> <h3>Email</h3> </div>
-              <div class="form-group col-md-9"> <input type="text" class="form-control" id="emailinput" placeholder="Please enter your email."> </div>
+    <script src="./js/login.js"></script>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container">
+            <a href="../index.html" style="color:teal; padding-right: 15px">KOR</a> <a class="navbar-brand" href="index.html">
+                <i class="fa d-inline fa-lg fa-stop-circle"></i>
+                <b>Out of Stock Promotions</b>
+            </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar10">
+                <ul class="navbar-nav ml-auto">
+                    <div>
+                        <input type="text" id="email" placeholder="email">
+                        <input type="password" id="pw" placeholder="password" onkeydown="logsub()">
+                        <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="login()">Sign In</a>
+                        <button class="btn btn-primary" style="margin-left: 10px;" onclick="$('#makeAccount').show(); $('#mask').show();"> Sign up </button>
+                    </div>
+                </ul>
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-3"> <h3>Password</h3> </div>
-                <div class="form-group col-md-9"> <input type="password" class="form-control" id="passwordinput" placeholder="Please enter your password."> </div>
-              </div>
-            <div class="form-row">
-                <div class="form-group col-md-3"> <h3>Password check</h3> </div>
-                <div class="form-group col-md-9"> <input type="password" class="form-control" id="passwordinput2" placeholder="Please enter your password again."> </div>
-              </div>
-            <div class="form-row">
-              <div class="form-group col-md-3"> <h3>Name of restaurant</h3> </div>
-              <div class="form-group col-md-9"> <input type="text" class="form-control" id="storename" placeholder="Please enter your restaurant."> </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group col-md-3"> <h3>Phone number</h3> </div>
-              <div class="form-group col-md-9"> <input type="text" class="form-control" id="phonenum" placeholder="Please enter your phone number."> </div>
-            </div>
-            <h3>Address</h3>
-            <div class="form-group"> <input type="text" class="form-control" id="address" placeholder="Please enter your restaurant address."> </div>
-            <h3>Working hours</h3>
-            <div class="form-group"> <textarea class="form-control" id="opertime" rows="6" placeholder="Please enter your working hours. &#10;&#10; E.g.)&#10; Weekdays 11 am ~ 7 9 pm &#10; Weekends 1 pm ~ 9 pm"></textarea> </div>
-            <button onclick="register()" class="btn btn-primary">Sign Up</button>
-          </div>
         </div>
-      </div>
+    </nav>
+    <div id="makeAccount" style="display: none;">
+        <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px;; padding-left: 10px; padding-right: 10px;"> X </button>
+        <div style="height: 50px;"> &nbsp; </div>
+        <div class="form-row">
+            <div class="form-group col-md-4"> <h3>Email</h3> </div>
+            <div class="form-group col-md-8"> <input type="text" class="form-control" id="emailinput" placeholder="Please enter your email."> </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4"> <h3>Password</h3> </div>
+            <div class="form-group col-md-8"> <input type="password" class="form-control" id="passwordinput" placeholder="Please enter your password."> </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4"> <h3>Password check</h3> </div>
+            <div class="form-group col-md-8"> <input type="password" class="form-control" id="passwordinput2" placeholder="Please enter your password again."> </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4"> <h3>Restaurant Name</h3> </div>
+            <div class="form-group col-md-8"> <input type="text" class="form-control" id="storename" placeholder="Please enter your restaurant."> </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4"> <h3>Phone number</h3> </div>
+            <div class="form-group col-md-8"> <input type="text" class="form-control" id="phonenum" placeholder="Please enter your phone number."> </div>
+        </div>
+        <h3>Address</h3>
+        <div class="form-group"> <input type="text" class="form-control" id="address" placeholder="Please enter your restaurant address."> </div>
+        <h3>Working hours</h3>
+        <div class="form-group"> <textarea style="resize: none;" class="form-control" id="opertime" rows="6" placeholder="Please enter your working hours. &#10;&#10; E.g.)&#10; Weekdays 11 am ~ 7 9 pm &#10; Weekends 1 pm ~ 9 pm"></textarea> </div>
+        <center><button onclick="register()" class="btn btn-primary">Sign Up</button></center>
     </div>
+    <div id="mask"></div>
+    <div class="py-5 text-center text-white h-100 align-items-center d-flex" style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, .75), rgba(0, 0, 0, .75)), url(https://static.pingendo.com/cover-bubble-dark.svg);  background-position: center center, center center;  background-size: cover, cover;  background-repeat: repeat, repeat;">
+        <div class="container py-5">
+            <div class="row" style="">
+                <div class="mx-auto col-lg-8 col-md-9 offset-md-1">
+                    <div id="before">
+                        <h1 class="mb-4 display-4">Out of Stock Promotions</h1><h6>(please sign in on the right upper corner)</h6><br><br>
+                        <p class="lead mb-5">
+                            Stories to tranfer to the customers<br><br>Make
+                            it right now!!<br><br>
+                        </p><br>
+                        <!--<div id="firebaseui-auth-container"></div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  </div>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 
 </html>
