@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+    <script src="./js/logout.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+
+    <style>
+        ul.tabs {
+            margin: 0px;
+            padding: 0px;
+            list-style: none;
+        }
+
+        ul.tabs li {
+            background: none;
+            color: #222;
+            display: inline-block;
+            padding: 5px 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: x-large;
+            width: 501px;
+            height: 45px;
+        }
+
+        ul.tabs li.current {
+            background: #ededed;
+            color: #222;
+        }
+
+        .tab-content {
+            display: none;
+            background: #ededed;
+        }
+
+        .tab-content.current {
+            display: block;
+        }
+
+        .ndisplay {
+            display: none;
+        }
+
+        .tdisplay {
+            display: inline-block;
+        }
+
+        .btn {
+            cursor: pointer;
+        }
+        .ui-resizable-helper {
+            border: 2px dotted #00F;
+        }
+
+        #mask {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        #popGuide1 {
+            display: none;
+            position: absolute;
+            z-index: 2;
+            background: #ededed;
+            text-align: left;
+        }
+
+        #popGuide2 {
+            display: none;
+            position: absolute;
+            z-index: 2;
+            background: #ededed;
+            text-align: left;
+        }
+
+        ::-webkit-scrollbar {
+            display: none !important;
+        }
+    </style>
+
+    <script>
+        var key = null;
+        var url = window.location.href;
+        var istab1 = true;
+
+        $(document).ready(function () {
+            var uid;
+            var sub1 = document.getElementById("sub1");
+            var sub2 = document.getElementById("sub2");
+            var btn1 = document.getElementById("btn1");
+            var btn2 = document.getElementById("btn2");
+            var link = document.getElementById("link");
+            var ntext = document.getElementById("ntext");
+            var istab1 = true;
+            var isSeen = false;
+            var oldLink = "";
+            var oldNtext = "";
+
+            if (url.indexOf("?") != -1) {
+                var keys = url.split("?");
+                if (keys.length != 2) { invalid(); }
+                if (keys[1].indexOf("key=") != 0) { invalid(); }
+                key = keys[1].split("key=")[1];
+                if (key == "") { invalid(); }
+                startpage();
+            }
+            else {
+                invalid();
+            }
+
+            firebase.auth().onAuthStateChanged(function (user) {
+                if (user) {
+                    uid = firebase.auth().currentUser.uid;
+                } else {
+                    invalid();
+                }
+            });
+            $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+            $("#popGuide1").css({ 'left': $(document).width() / 2 - $("#popGuide1").width() / 2, 'top': 0 });
+
+            function invalid() {
+                alert("Abnormal query.");
+                history.back();
+            }
+
+            function startpage() {
+                return firebase.database().ref('/').once('value', function (snapshot) {
+                    var myValue = snapshot.val();
+                    var idpws = Object.keys(myValue);
+                    var valid = false;
+
+                    for (var i = 0; i < idpws.length; i++) {
+                        if (idpws[i] == uid) {
+                            readFD();
+                            valid = true;
+                            break;
+                        }
+                    }
+                    if (valid == false) {
+                        invalid();
+                    }
+                });
+            }
+
+            function readFD() {
+                return firebase.database().ref('/').child(uid).child("card").child(key).child("wiki").once('value', function (snapshot) {
+                    var myValue = snapshot.val();
+                    var mykeys = Object.keys(myValue);
+                    if (mykeys.length == 3) {
+                        oldNtext = myValue["ntext"];
+                        oldLink = myValue["link"];
+                        istab1 = myValue["istab1"];
+                    }
+                    $("#ntext").html(oldNtext);
+                    link.value = oldLink;
+                    $(".resizable").resizable({ aspectRatio: true, helper: "ui-resizable-helper", maxWidth: 950, minWidth: 50 });
+                    $("#ntext").sortable({
+                        cancel: "div",
+                        update: function (event, ui) {
+                            $("#ntext > div.resizable").wrap('<div></div>');
+                            $('#ntext').sortable("refresh");
+                        }
+                    });
+                    $(".resizable").draggable({
+                        connectToSortable: "#ntext",
+                        helper: "orginal",
+                        revert: "invalid"
+                    });
+                    if (istab1 == false) {
+                        document.getElementById("tab2").click();
+                        btn2.click();
+                    }
+                });
+            }
+
+            btn1.onclick = function () {
+                if (isSeen == false) {
+                    $("#ptext").removeClass("ndisplay");
+                    $("#ptext").addClass("tdisplay");
+                    $("#nntext").removeClass("tdisplay");
+                    $("#nntext").addClass("ndisplay");
+                    $("#itext").removeClass("tdisplay");
+                    $("#itext").addClass("ndisplay");
+                    $("#ptext").html($("#ntext").html());
+                    $(".selector").resizable("destory");
+                    $(this).text("Edit");
+                    isSeen = true;
+                } else {
+                    $("#nntext").removeClass("ndisplay");
+                    $("#nntext").addClass("tdisplay");
+                    $("#itext").removeClass("ndisplay");
+                    $("#itext").addClass("tdisplay");
+                    $("#ptext").removeClass("tdisplay");
+                    $("#ptext").addClass("ndisplay");
+                    $(".resizable").resizable();
+                    $(this).text("Preview");
+                    isSeen = false;
+                }
+            }
+            btn2.onclick = function () {
+                var str = link.value.split("=");
+                if (str[0] == "https://www.youtube.com/watch?v") {
+                    document.getElementById("vid").src = "https://www.youtube.com/embed/" + str[1];
+                }
+                else {
+                    alert("Enter the appropriate URL.\ne.g.  https://www.youtube.com/watch?v=xxxxxxxxxxx");
+                }
+            }
+            sub1.onclick = function () {
+                var resimgs = document.getElementsByClassName("resizable");
+                for (i = 0; i < resimgs.length; i++) {
+                    while (resimgs[i].childNodes.length > 1) {
+                        resimgs[i].removeChild(resimgs[i].lastElementChild);
+                    }
+                }
+                firebase.database().ref('/').child(uid).child("card").child(key).child("wiki").set({
+                    ntext: $("#ntext").html(),
+                    link: oldLink,
+                    istab1: true
+                });
+                window.location.href = "./madeCard.html";
+            }
+            sub2.onclick = function () {
+                var str = link.value.split("=");
+                if (str[0] == "https://www.youtube.com/watch?v") {
+                    firebase.database().ref('/').child(uid).child("card").child(key).child("wiki").set({
+                        ntext: oldNtext,
+                        link: link.value,
+                        istab1: false
+                    });
+                    window.location.href = "./madeCard.html";
+                }
+                else {
+                    alert("Enter the appropriate URL.\ne.g.  https://www.youtube.com/watch?v=xxxxxxxxxxx");
+                }
+            }
+
+            $('ul.tabs li').click(function () {
+                var tab_id = $(this).attr('data-tab');
+
+                $('ul.tabs li').removeClass('current');
+                $('.tab-content').removeClass('current');
+
+                $(this).addClass('current');
+                $("#" + tab_id).addClass('current');
+                $("#guide" + tab_id).addClass('current');
+                $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                $("#popGuide2").css({ 'left': $(document).width() / 2 - $("#popGuide2").width() / 2, 'top': $(document).height() / 2 - $("#popGuide2").height() / 2 });
+            });
+
+            $("#guidetab-1").click(function () {
+                $("#popGuide1").show();
+                $("#mask").show();
+                return false;
+            });
+            $("#popGuide1 > button").click(function () {
+                $("#popGuide1").hide();
+                $("#mask").hide();
+                return false;
+            });
+            $("#guidetab-2").click(function () {
+                $("#popGuide2").show();
+                $("#mask").show();
+                return false;
+            });
+            $("#popGuide2 > button").click(function () {
+                $("#popGuide2").hide();
+                $("#mask").hide();
+                return false;
+            });
+
+            $("#ilink").keydown(function (event) {
+                if (event.keyCode == 13) {
+                    $("#ilinksub").click();
+                    return false;
+                }
+            });
+
+            $("#ilinksub").click(function () {
+                var isrc = document.getElementById("ilink").value;
+                if (isrc == "") { return false };
+                var iddiv = document.createElement('div');
+                var idiv = document.createElement('div');
+                idiv.className = "resizable";
+                idiv.contentEditable = false;
+                idiv.style = "padding: 0px; width: 500px; height: auto; display: inline-block;";
+                var iimg = document.createElement('img');
+                iimg.style = "width: 500px; height: auto;"
+                iimg.src = isrc;
+                idiv.appendChild(iimg);
+                iimg.style = "width: 100%; height: 100%";
+                iddiv.appendChild(idiv);
+                ntext.appendChild(iddiv);
+                ntext.scrollTop = ntext.scrollHeight;
+                document.getElementById("ilink").value = "";
+                $(".resizable").resizable({ aspectRatio: true, helper: "ui-resizable-helper", maxWidth: 950, minWidth: 50 });
+                $("#ntext").sortable({
+                    cancel: "div",
+                    update: function (event, ui) {
+                        $("#ntext > div.resizable").wrap('<div></div>');
+                        $('#ntext').sortable("refresh");
+                    }
+                });
+                $(".resizable").draggable({
+                    connectToSortable: "#ntext",
+                    helper: "orginal",
+                    revert: "invalid"
+                });
+            });
+        });
+    </script>
+</head>
+
+<body style = "background-color: #AAAAAA;">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container"> <a class="navbar-brand" href="./makeCard.html">
+        <i class="fa d-inline fa-lg fa-stop-circle"></i>
+        <b>Out of Stock Promotions</b>
+      </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar10">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html"><b>Make a card</b></a> </li>
+          <li class="nav-item"> <a class="nav-link" href="./madeCard.html"><b>Card inventory</b></a> </li>
+        </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">Log out</a>
+      </div>
+    </div>
+  </nav>
+
+  <div id = "popGuide1">
+    <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+    <div></div>
+    <img src="./pictures/guide3.png" style = "width: 700px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
+  </div>
+  <div id = "popGuide2">
+    <button class = "btn btn-danger btn-sm" style = "float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+    <div></div>
+    <img src="./pictures/guide4.png" style = "width: 1000px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
+  </div>
+  <div id = "mask"></div>
+
+  <center>
+  <div>
+    <ul class="tabs">
+      <li class="tab-link current" id = "tab1" data-tab="tab-1" style = "position: relative;"> Details <button id = "guidetab-1" class="btn btn-dark tab-content current" style = "background-color: black; position: absolute; left: 400px; top: 5px;"> Guide </button> </li>
+      <li class="tab-link" id = "tab2" data-tab="tab-2" style = "position: relative;"> Youtube Link <button id = "guidetab-2" class="btn btn-dark tab-content" style = "background-color: black; position: absolute; left: 400px; top: 5px;"> Guide </button> </li>
+    </ul>
+
+    <div id = "tab-1" class="tab-content current" style = "width: 1006px; min-height: 644px;">
+
+      <div style = "height: 25px;"> </div>
+      <div id = "ptext" class = "ndisplay" style = "width: 956px; min-height: 544px; text-align: left; margin-bottom: 0px; padding: 5px; font-size: 16px; border: 1px solid black; background-color: #f8f8f8;"></div>
+      <div id="nntext" class = "tdisplay" style="position: relative; width: 956px; height: 960px; text-align: left;">
+        <div id = "ntext" style="position: absolute; top: 0px; text-align: left; width: 956px; height: 960px; border: 1px solid #AAAAAA; overflow-x: hidden; overflow-y: scroll; background-color: white; padding: 5px;" contenteditable="true"></div>
+      </div>
+      <div id="itext" class="tdisplay" style="margin-top:10px;">
+      <a style="font-weight:bold; font-size: large;">Image Link :</a> &nbsp;
+      <input type="text" id="ilink" style="width: 700px;" placeholder='Enter the link(e.g.: http://...)you want to insert.(You cannot upload local files)' /> &nbsp;
+      <button class="btn btn-secondary"id="ilinksub" style="margin-bottom:5px;"> Insert </button>
+      </div>
+      <div style = "height: 11px;"> </div>
+      <a id = "btn1" class="btn btn-danger btn-lg" style = "color: white"> Preview </a> &nbsp;
+      <h3"> <a id = "sub1" class="btn btn-primary btn-lg" style = "color: white"> &nbsp; SAVE &nbsp; </a> </h3>
+      <div style = "height: 17px;"> </div>
+    </div>
+
+    <div id = "tab-2" class="tab-content" style = "width: 1006px;">
+      <div style = "height: 25px;"> </div>
+      <div style = "width: 956px; height: 538px; background-color: black; padding: 0px;">
+        <iframe id = "vid" width="956" height="538" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div style = "height: 17px;"> </div>
+      <h3 style = "font-weight: bold;"> Youtube Link : &nbsp; <input style = "width: 520px; padding-left: 5px; font-size: large;" type = "text" id = "link" placeholder = "e.g: https://www.youtube.com/watch?v=xxxxxxxxxxx"/> &nbsp;
+      <a id = "btn2" class="btn btn-danger btn-lg" style = "color: white"> Preview </a> &nbsp;
+      <a id = "sub2" class="btn btn-primary btn-lg" style = "color: white"> Save </a> </h3>
+      <div style = "height: 5px;"> </div>
+    </div>
+  </div>
+  </center>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+</html>

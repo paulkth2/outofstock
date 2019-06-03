@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+  <script src="./js/logout.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+
+    <style>
+        #mask {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+            background-color: rgba(0,0,0,0.5);
+        }
+        img {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body style="">
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="./makeCard.html">
+                <i class="fa d-inline fa-lg fa-stop-circle"></i>
+                <b>Out of Stock Promotions</b>
+            </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar10">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html"><b>Make a card</b></a> </li>
+                <li class="nav-item"> <a class="nav-link" href="./madeCard.html"><b>Card inventory</b></a> </li>
+              </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">Log out</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mask"></div>
+
+    <div class="py-5 text-center">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6" style="text-align: center">
+                    <h5> Menu <input type="text" id="menu-name" placeholder="Enter the name of menu." /></h5>
+                    <input type="file" id="menuimage" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="550" id="mainpic" onclick="document.getElementById('menuimage').click();"/>
+                </div>
+                <div class="col-md-6">
+                    <h6> Ingredient1 <input type="text" id="1-name" placeholder="Enter the name of ingredient." /></h6>
+                    <input type="file" id="ingreimage1" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient1" onclick="document.getElementById('ingreimage1').click();" /><br><br>
+                    <h6> Ingredient2 <input type="text" id="2-name" placeholder="Enter the name of ingredient." /> </h6>
+                    <input type="file" id="ingreimage2" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient2" onclick="document.getElementById('ingreimage2').click();" /><br><br>
+                    <h6> Ingredient3 <input type="text" id="3-name" placeholder="Enter the name of ingredient." /> </h6>
+                    <input type="file" id="ingreimage3" class="file-select" accept="image/*" style="display:none;" />
+                    <img alt="Bootstrap Image Preview" src="./pictures/plusSymbol.png" width="200" id="ingredient3" onclick="document.getElementById('ingreimage3').click();" /><br><br>
+
+                </div>
+            </div>
+            <div margin: 0 auto">
+                <center>
+                    <textarea id='text' style="width: 800px; height: 400px; resize: none; display: inline-block;" placeholder="Write a simple explanations."></textarea>
+                </center>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-success" style="width: 100px; height: 50px;" onclick="send()">
+                        <b>MAKE</b>
+                    </button> <br><br><b>*It may take a several seconds to complete the task.</b>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/makerealcard.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+</html>

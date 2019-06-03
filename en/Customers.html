@@ -1,0 +1,290 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+    <script src="./js/logout.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+    <style>
+        #mask {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        #addcustomer {
+            display: none;
+            position: absolute;
+            z-index: 2;
+            width: 500px;
+            background-color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body style="">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="./makecard.html">
+                <i class="fa d-inline fa-lg fa-stop-circle"></i>
+                <b>Out of Stock Promotions</b>
+            </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar10">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html"><b>Make a card</b></a> </li>
+                <li class="nav-item"> <a class="nav-link" href="./madeCard.html"><b>Card inventory</b></a> </li>
+              </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">Log out</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mask"></div>
+    <div id="addcustomer">
+        <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+        <center style="padding: 0px 20px 20px 20px;">
+            <div style="height: 20px;"></div>
+            <h3> Register a customer </h3>
+            <form role="form">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">
+                        Name
+                    </label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="e.g. Sundar Pichai" />
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">
+                        Email
+                    </label>
+                    <input type="email" class="form-control" id="exampleInputPassword1" placeholder="e.g. xxx@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label for="exampleStatus1">
+                        <strong>Status</strong>
+                    </label><br>
+                    <input id="stat0" type="checkbox"> VVIP
+                    <input id="stat1" type="checkbox"> VIP
+                    <input id="stat2" type="checkbox" checked> NEW<br>
+                </div>
+            </form>
+            <br />
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Favorite foods</span>
+                </div>
+                <textarea class="form-control favorite_food" aria-label="With textarea" style="resize:none;"></textarea>
+            </div>
+            <br />
+            <button class="btn btn-success" id="add">Add</button>
+        </center>
+    </div>
+
+    <div class="py-5 text-center">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                    <h3>
+                        List of customers
+                    </h3>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>
+                        <span id="cur_card">
+                            <div class="btn-group">No contact over
+                                <button type="button" class="btn btn-outline-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <strong>15</strong>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item">7</a>
+                                    <a class="dropdown-item">15</a>
+                                    <a class="dropdown-item">30</a>
+                                </div>
+                            </div>
+                        </span> days
+                    </h3>
+                    <table class="table" id="rec_customers">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input class="checkall" type="checkbox">
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Favorite Food
+                                </th>
+                                <th>
+                                    Last date
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h3>
+                        All customers <button type="button" class="btn btn-outline-danger pull-right delete">Delete</button>
+                    </h3>
+                    <table class="table" id="reg_customers">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input class="checkall" type="checkbox">
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Favorite Food
+                                </th>
+                                <th>
+                                    Last date
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!---
+                                      <tr>
+                                          <td>
+                                              <input id="reg_0" class="check" type="checkbox">
+                                          </td>
+                              <td>
+                                              (Name)
+                                          </td>
+                                          <td>
+                                          (FOOD)
+                                          </td>
+                                          <td class="address">
+                                              (628)xxx-xxxx
+                                          </td>
+                                          <td>
+                                              New
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <input id="reg_1" class="check" type="checkbox">
+                                          </td>
+                              <td>
+                                              (Name)
+                                          </td>
+                                          <td>
+                                              (FOOD)
+                                          </td>
+                                          <td class="address">
+                                              (628)xxx-xxxx
+                                          </td>
+                                          <td>
+                                              New
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <input id="reg_2" class="check" type="checkbox">
+                                          </td>
+                              <td>
+                                              (Name)
+                                          </td>
+                                          <td>
+                                              (FOOD)
+                                          </td>
+                                          <td class="address">
+                                          (628)xxx-xxxx
+                                          </td>
+                                          <td>
+                                              New
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <input id="reg_3" class="check" type="checkbox">
+                                          </td>
+                              <td>
+                                              (Name)
+                                          </td>
+                                          <td>
+                                              (FOOD)
+                                          </td>
+                                          <td class="address">
+                                              (628)xxx-xxxx
+                                          </td>
+                                          <td>
+                                              New
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <input id="reg_4" class="check" type="checkbox">
+                                          </td>
+                              <td>
+                                              (Name)
+                                          </td>
+                                          <td>
+                                              (FOOD)
+                                          </td>
+                                          <td class="address">
+                                          (628)xxx-xxxx
+                                          </td>
+                                          <td>
+                                              New
+                                          </td>
+                                      </tr>
+                            --->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="padding-bottom:10px">
+                    <a id="btn_add">
+                        <button type="button" class="btn btn-success">
+                            <b>Add customer</b>
+                        </button>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="#.html">
+                        <button type="button" class="btn btn-success btn-send">
+                            <b>Send</b>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="./js/customeradd.js"></script>
+    <script src="./js/Send.js"></script>
+</body>
+
+</html>

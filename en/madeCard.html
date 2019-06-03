@@ -1,0 +1,619 @@
+﻿
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+        <script src="./js/logout.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
+        <style>
+            .active {
+                pointer-events: none;
+            }
+            #mask {
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 1;
+                background-color: rgba(0,0,0,0.5);
+                display: none;
+            }
+            #popGuide {
+                display: none;
+                position: absolute;
+                z-index: 2;
+                background: #ededed;
+                text-align: left;
+            }
+            #cardExplain {
+                display: none;
+                position: absolute;
+                z-index: 2;
+                background: #ededed;
+                text-align: left;
+            }
+            #cardComment {
+                display: none;
+                position: absolute;
+                z-index: 2;
+                background: #ededed;
+                text-align: left;
+                width: 680px;
+            }
+            .ui-autocomplete {
+                max-height: 400px;
+                width: 200px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                background: white;
+                border: 1px solid black;
+                font-size: 20px;
+                text-align: left;
+                padding: 0px 5px 5px 10px;
+            }
+            .ui-helper-hidden-accessible {
+                display: none;
+            }
+            .star_rated a:not(.on) {
+                color: #ededed;
+                cursor: text;
+            }
+
+            .star_rated a.on {
+                color: gold;
+                cursor: text;
+            }
+        </style>
+        <script>
+            var url = window.location.href;
+
+            $(document).ready(function () {
+                var uid;
+                var cards = [];
+                var menus = [];
+                var page = 1;
+                var sdata = "";
+                var issearch = false;
+                var menu;
+                var ing1;
+                var ing2;
+                var ing3;
+                var text;
+                var key;
+                var comments;
+
+                if (url.indexOf("#") != -1) { url = url.split("#")[0]; }
+                if (url.indexOf("?") != -1) {
+                    page = url.split("?")[1];
+                    if (url.split("?").length == 3) {
+                        issearch = true;
+                        sdata = decodeURI(url.split("?n=")[1]);
+                    }
+                    if (page.indexOf("page=") == 0) {
+                        page = Number(page.split("page=")[1]);
+                    }
+                    else { invalid(); }
+                }
+                startpage();
+
+                firebase.auth().onAuthStateChanged(function (user) {
+                    if (user) {
+                        uid = firebase.auth().currentUser.uid;
+                    } else {
+                        invalid();
+                    }
+                });
+
+                function invalid() {
+                    alert("Abnormal query");
+                    history.back();
+                }
+
+                function startpage() {
+                    return firebase.database().ref('/').once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        var idpws = Object.keys(myValue);
+                        var valid = false;
+
+                        for (var i = 0; i < idpws.length; i++) {
+                            if (idpws[i] == uid) {
+                                readFD();
+                                valid = true;
+                                break;
+                            }
+                        }
+                        if (valid == false) {
+                            invalid();
+                        }
+                    });
+                }
+
+                function readFD() {
+                    return firebase.database().ref('/').child(uid).child("card").once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        cards = Object.keys(myValue).sort(function (a, b) {
+                            return Number(a.split("card")[1]) - Number(b.split("card")[1]);
+                        });
+                        var cardIndex = cards.length;
+                        for (i = 1; i < cards.length; i++) {
+                            menus.push(myValue[cards[i]]["explain"]["menu"]);
+                        }
+                        if (sdata != "") {
+                            var oldcards = cards;
+                            cards = ["card0"];
+                            for (i = 0; i < menus.length; i++) {
+                                if (menus[i].indexOf(sdata) != -1) {
+                                    cards.push(oldcards[i+1]);
+                                }
+                            }
+                            cardIndex = cards.length;
+                        }
+
+                        var maxp = parseInt((cardIndex - 2) / 3) + 1;
+                        var x = 0;
+                        for (i = page * 3 - 2; i < cardIndex && i <= page * 3; i++) {
+                            x++;
+                            var currentCard = myValue[cards[cardIndex - i]];
+
+                            var divcard = document.createElement('div');
+                            divcard.className = "card";
+                            var idiv = document.createElement('div');
+                            idiv.style = "width: 100%; height: auto; text-align: right;";
+                            var idiv1 = document.createElement('div');
+                            idiv1.style = "width: 100%; height: auto; position: relative;";
+                            var mimage = document.createElement('img');
+                            mimage.className = "card-img-top";
+                            mimage.src = currentCard["main_image"]["src"];
+                            idiv1.appendChild(mimage);
+                            idiv.appendChild(idiv1);
+
+                            if (currentCard["wiki"] != undefined) {
+                                var idiv2 = document.createElement('div');
+                                idiv2.style = "width: 100%; height: auto; position: absolute; top: 0px;";
+                                var imga = document.createElement('a');
+                                var img = document.createElement('img');
+                                if (currentCard["wiki"]["istab1"]) {
+                                    img.src = "https://cdn.pixabay.com/photo/2013/06/07/09/53/notepad-117597__340.png";
+                                } else {
+                                    img.src = "https://cdn.pixabay.com/photo/2016/07/03/18/36/youtube-1495277_1280.png";
+                                }
+                                img.style = "width: 15%; height: auto;"
+                                imga.appendChild(img);
+                                imga.href = "makeWiki.html?key=" + cards[cardIndex - i];
+                                idiv2.appendChild(imga);
+                                idiv.appendChild(idiv2);
+                            }
+
+                            divcard.appendChild(idiv);
+                            var divcb = document.createElement('div');
+                            divcb.className = "card-block";
+                            divcb.style = "padding: 10px; padding-bottom: 0px";
+                            var h5 = document.createElement('h5');
+                            h5.className = "card-title";
+                            h5.style = "font-weight: bold;";
+                            var itext1 = document.createTextNode(currentCard["explain"]["menu"]);
+                            h5.appendChild(itext1);
+                            divcb.appendChild(h5);
+                            var p1 = document.createElement('p');
+                            p1.className = "card-text";
+                            p1.style = "font-weight: bold;";
+                            var itext2 = document.createTextNode("Ingredient : " + currentCard["explain"]["ing1"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing2"] + "\u00A0\u00A0\u00A0\u00A0" + currentCard["explain"]["ing3"]);
+                            p1.appendChild(itext2);
+                            divcb.appendChild(p1);
+                            var p2 = document.createElement('div');
+                            p2.style = "max-height: 264px; overflow: hidden;";
+                            var extext = currentCard["explain"]["text"].split("\n");
+                            for (j = 0; j < extext.length; j++) {
+                                p2.appendChild(document.createTextNode(extext[j]));
+                                p2.appendChild(document.createElement('br'));
+                            }
+                            divcb.appendChild(p2);
+                            var p3 = document.createElement('p');
+                            p3.style = "margin-top: 5px;";
+                            var a3 = document.createElement('button');
+                            a3.className = "btn btn-danger delcard";
+                            a3.style = "color: white;";
+                            a3.data = cards[cardIndex - i];
+                            var itext6 = document.createTextNode("Delete");
+                            a3.appendChild(itext6);
+                            p3.appendChild(a3);
+                            var a2 = document.createElement('a');
+                            a2.className = "btn btn-success";
+                            a2.style = "float: right; margin-left: 5px;";
+                            a2.href = "./Customers.html";
+                            var itext5 = document.createTextNode("Send");
+                            a2.appendChild(itext5);
+                            p3.appendChild(a2);
+                            var a1 = document.createElement('button');
+                            a1.className = "btn btn-secondary expcard";
+                            a1.style = "float: right; margin-left: 5px;";
+                            a1.data = cards[cardIndex - i];
+                            var itext4 = document.createTextNode("Edit");
+                            a1.appendChild(itext4);
+                            p3.appendChild(a1);
+                            var a0 = document.createElement('a');
+                            a0.className = "btn btn-info";
+                            a0.style = "float: right;";
+                            a0.href = "./makeWiki.html?key=" + cards[cardIndex - i];
+                            var itext7 = document.createTextNode("Details");
+                            a0.appendChild(itext7);
+                            p3.appendChild(a0);
+                            divcb.appendChild(p3);
+                            var p4 = document.createElement('p');
+                            p4.style = "margin-top: 5px; text-align: right;";
+                            if (currentCard["comment"] == undefined) {
+                                p4.innerText = "Doesn't have any comment.";
+                            } else {
+                                if(Object.keys(currentCard["comment"]).length == 1){
+                                  p4.innerText = " " + Object.keys(currentCard["comment"]).length + " comment exist.";
+                                }else{
+                                  p4.innerText = " " + Object.keys(currentCard["comment"]).length + " comments exist.";
+                                }
+                                var a4 = document.createElement('a');
+                                a4.className = "btn btn-secondary cardcom"
+                                a4.style = "background-color: #f8f8f8; margin-left: 10px; cursor: pointer;";
+                                a4.innerText = " See ";
+                                a4.data = cards[cardIndex - i];
+                                p4.appendChild(a4);
+                            }
+                            divcb.appendChild(p4);
+                            divcard.appendChild(divcb);
+
+                            var cardId = "c" + String((i - 1) % 3 + 1);
+                            document.getElementById(cardId).appendChild(divcard);
+                        }
+                        var ppp = 5 * parseInt((page - 1) / 5);
+                        for (i = ppp + 1; i <= ppp + 5; i++) {
+                            var lid = "#l" + String((i - 1) % 5 + 1);
+                            $(lid + "> a").text(String(i));
+                            if (i <= maxp) {
+                                $(lid).removeClass("disabled");
+                                $(lid).children()[0].style += { 'background': 'white' };
+                                if (issearch) {
+                                    $(lid).children()[0].href = "./madeCard.html?page=" + String(i) + "?n=" + sdata;
+
+                                } else {
+                                    $(lid).children()[0].href = "./madeCard.html?page=" + String(i);
+                                }
+                            }
+                        }
+                        if (page > 5) {
+                            $("#pprev").removeClass("disabled");
+                            $("#pprev").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#pprev").children()[0].href = "./madeCard.html?page=1?n=" + sdata;
+
+                            } else {
+                                $("#pprev").children()[0].href = "./madeCard.html?page=1";
+                            }
+                        }
+                        if (page > 5) {
+                            $("#prev").removeClass("disabled");
+                            $("#prev").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#prev").children()[0].href = "./madeCard.html?page=" + String(5 * parseInt((page - 1) / 5)) +"?n=" + sdata;
+
+                            } else {
+                                $("#prev").children()[0].href = "./madeCard.html?page=" + String(5*parseInt((page-1)/5));
+                            }
+                        }
+                        if (page <= 5 * parseInt((maxp - 1) / 5)) {
+                            $("#next").removeClass("disabled");
+                            $("#next").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#next").children()[0].href = "./madeCard.html?page=" + String(5 * parseInt((page - 1) / 5) + 6) + "?n=" + sdata;
+
+                            } else {
+                                $("#next").children()[0].href = "./madeCard.html?page=" + String(5 * parseInt((page - 1) / 5) + 6);
+                            }
+                        }
+                        if (page <= 5 * parseInt((maxp - 1) / 5)) {
+                            $("#nnext").removeClass("disabled");
+                            $("#nnext").children()[0].style += { 'background': 'white' };
+                            if (issearch) {
+                                $("#nnext").children()[0].href = "./madeCard.html?page=1" + String(maxp) + "?n=" + sdata;
+
+                            } else {
+                                $("#nnext").children()[0].href = "./madeCard.html?page=" + String(maxp);
+                            }
+                        }
+                        $("#l" + String(page)).addClass("active");
+                    });
+                }
+
+                function writeTD() {
+                    firebase.database().ref('/').child(uid).child("card").child(key).child("explain").set({
+                        menu: menu.value,
+                        ing1: ing1.value,
+                        ing2: ing2.value,
+                        ing3: ing3.value,
+                        text: text.value
+                    });
+                }
+
+                function delFD(cardid) {
+                    firebase.database().ref('/').child(uid).child("card").child(cardid).remove();
+                    location.href = url;
+                }
+
+                function expCard(cardid) {
+                    key = cardid;
+                    menu = document.getElementById("menu");
+                    ing1 = document.getElementById("ing1");
+                    ing2 = document.getElementById("ing2");
+                    ing3 = document.getElementById("ing3");
+                    text = document.getElementById("text");
+
+                    return firebase.database().ref('/').child(uid).child("card").child(key).child("explain").once('value', function (snapshot) {
+                        var myValue = snapshot.val();
+                        menu.value = myValue["menu"];
+                        ing1.value = myValue["ing1"];
+                        ing2.value = myValue["ing2"];
+                        ing3.value = myValue["ing3"];
+                        text.value = myValue["text"];
+                        $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                        $("#cardExplain").css({ 'left': $(document).width() / 2 - $("#cardExplain").width() / 2, 'top': $(document).height() / 2 - $("#cardExplain").height() / 2 });
+                        $("#cardExplain").show();
+                        $("#mask").show();
+                    });
+                }
+
+                function initializeComment() {
+                    var commentpage = document.getElementById("cardComment");
+                    while (commentpage.childNodes.length > 5) {
+                        commentpage.removeChild(commentpage.lastElementChild);
+                    }
+                }
+
+                function seeCom(cardid) {
+                    return firebase.database().ref('/').child(uid).child("card").child(cardid).child("comment").on('value', function (snapshot) {
+                        initializeComment();
+                        comments = snapshot.val();
+                        var commentList = Object.keys(comments).sort(function (a, b) {
+                            return Number(a.split("comment")[1]) - Number(b.split("comment")[1]);
+                        });
+                        var clength = commentList.length;
+                        for (var i = 0; i < clength; i++) {
+                            var comment = commentList[clength - i - 1];
+                            makecomment(cardid, comment);
+                        }
+
+                        $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                        $("#cardComment").css({ 'left': $(document).width() / 2 - $("#cardComment").width() / 2, 'top': 40 });
+                        $("#cardComment").show();
+                        $("#mask").show();
+                    });
+                }
+                function makecomment(cardid, comment) {
+                    var div1 = document.createElement("div");
+                    div1.style = "background-color: #f8f8f8; padding: 0px 10px 0px 10px; margin-bottom: 5px;";
+                    var p1 = document.createElement("p");
+                    p1.className = "star_rated";
+                    p1.style = "margin-bottom: 0px;";
+                    var a5 = document.createElement('button');
+                    a5.className = "btn btn-link delecom";
+                    a5.style = "color: red; float: right;";
+                    a5.innerText = "Delete";
+                    a5.data = [cardid, comment];
+                    p1.appendChild(a5);
+                    var s0 = document.createElement("a");
+                    s0.style = "font-size: 18px;";
+                    s0.innerHTML = "★";
+                    for (var i = 0; i < 5; i++) {
+                        var s = s0.cloneNode(true);
+                        if (i < Number(comments[comment]["star"])) {
+                            s.className = "on";
+                        }
+                        p1.appendChild(s);
+                    }
+                    var div2 = document.createElement('div');
+                    div2.innerText = comments[comment]["text"];
+                    var div3 = document.createElement('div');
+                    div3.style = "text-align: right;";
+                    div3.innerText = comments[comment]["time"];
+                    div1.appendChild(p1);
+                    div1.appendChild(div2);
+                    div1.appendChild(div3);
+                    document.getElementById("cardComment").appendChild(div1);
+                }
+                function delCom(cardid, comment) {
+                    firebase.database().ref('/').child(uid).child("card").child(cardid).child("comment").child(comment).remove();
+                }
+
+                $("#guideBtn").click(function () {
+                    $("#mask").css({ 'width': $(document).width(), 'height': $(document).height() });
+                    $("#popGuide").css({ 'left': $(document).width() / 2 - $("#popGuide").width() / 2, 'top': $(document).height() / 2 - $("#popGuide").height() / 2 });
+                    $("#popGuide").show();
+                    $("#mask").show();
+                    return false;
+                });
+                $("#popGuide > button").click(function () {
+                    $("#popGuide").hide();
+                    $("#mask").hide();
+                    return false;
+                });
+                $("#cardExplain > button").click(function () {
+                    $("#cardExplain").hide();
+                    $("#mask").hide();
+                    return false;
+                });
+                $("#cardComment > button").click(function () {
+                    $("#cardComment").hide();
+                    $("#mask").hide();
+                    return false;
+                });
+                $("#save").click(function () {
+                    if (menu.value == "") {
+                        alert("Please enter the menu.");
+                        return;
+                    }
+                    else if (ing1.value == "" && ing2.value == "" && ing3.value == "") {
+                        alert("Please enter at least one ingredient");
+                        return;
+                    }
+                    writeTD();
+                    location.href = url;
+                });
+
+                $("#searchbtn").click(function () {
+                    var sval = $("#menusearch")[0].value;
+                    if (sval != 0) {
+                        location.href = "./madeCard.html?page=1?n=" + sval;
+                    }
+                    return false;
+                });
+                $("#menusearch").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#searchbtn").click();
+                        return false;
+                    }
+                });
+                $("#menusearch").autocomplete({
+                    source: menus,
+                    select: function (event, ui) {
+                        $(this)[0].value = ui.item.value;
+                        return false;
+                    }
+                });
+
+                $(document).on("click", ".delcard", function () {
+                    delFD($(this)[0].data);
+                    return false;
+                });
+
+                $(document).on("click", ".expcard", function () {
+                    expCard($(this)[0].data);
+                    return false;
+                });
+
+                $(document).on("click", ".cardcom", function () {
+                    seeCom($(this)[0].data);
+                    return false;
+                });
+
+                $(document).on("click", ".delecom", function () {
+                    delCom($(this)[0].data[0], $(this)[0].data[1]);
+                    return false;
+                });
+            });
+        </script>
+    </head>
+
+    <body style="">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="./makeCard.html">
+                    <i class="fa d-inline fa-lg fa-stop-circle"></i>
+                    <b>Out of Stock Promotions</b>
+                </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar10">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar10">
+                  <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"> <a class="nav-link" href="./makeRealCard.html"><b>Make a card</b></a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="./madeCard.html"><b>Card inventory</b></a> </li>
+                  </ul> <a class="btn navbar-btn ml-md-2 btn-light text-dark" onclick="logout()">Log out</a>
+                </div>
+            </div>
+        </nav>
+        <div id="popGuide">
+            <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+            <div></div>
+            <img src="./pictures/guide1.png" style="width: 500px; height: auto; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
+        </div>
+        <div id="cardComment">
+            <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+            <div style="height: 40px;"> &nbsp; </div>
+        </div>
+        <div id="cardExplain">
+            <button class="btn btn-danger btn-sm" style="float: right; margin-top: 5px; margin-right: 5px; padding-left: 10px; padding-right: 10px;"> X </button>
+            <div></div>
+            <div style="width: 600px; background-color: white; text-align: left; padding: 12px;">
+                <h2>
+                    <a style="font-weight: bold;"> Menu: </a> &nbsp; <input id="menu" type="text" style="width: 360px;" placeholder="Menu Name">
+                </h2>
+                <div style="text-align: left;">
+                    <p> <a style="font-weight: bold"> Menu: </a> &nbsp; <input type="text" id="ing1" style="width: 150px" placeholder="Ingredient 1"> &nbsp; <input type="text" id="ing2" style="width: 150px" placeholder="Ingredient 2"> &nbsp; <input type="text" id="ing3" style="width: 150px" placeholder="Ingredient 3"> </p>
+                    <textarea id="text" placeholder="Please write explanations." style="width: 574px; height: 480px; margin-bottom: 10px; padding-left: 5px; resize: none; font-size: 20px"></textarea>
+                </div>
+                <div style="text-align: center; color: white; margin-top: 1px; margin-bottom: 5px;">
+                    <a id="save" class="btn btn-lg btn-primary mx-1" style="cursor:pointer"> SAVE </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="mask"></div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between" style="width: 100%; text-align: right;">
+                        <nav>
+                            <button id="guideBtn" class="btn btn-dark"> Guide </button>
+                        </nav>
+                        <nav>
+                            <ul class="pagination justify-content-start" style="margin: auto; color: black;">
+                                <li class="page-item disabled" id="pprev">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> << </a>
+                                </li>
+                                <li class="page-item disabled" id="prev">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> < </a>
+                                </li>
+                                <li class="page-item disabled" id="l1">
+                                    <a class="page-link" style="color:black; background: #ddd;">1</a>
+                                </li>
+                                <li class="page-item disabled" id="l2">
+                                    <a class="page-link" style="color:black; background: #ddd;">2</a>
+                                </li>
+                                <li class="page-item disabled" id="l3">
+                                    <a class="page-link" style="color:black; background: #ddd;">3</a>
+                                </li>
+                                <li class="page-item disabled" id="l4">
+                                    <a class="page-link" style="color:black; background: #ddd;">4</a>
+                                </li>
+                                <li class="page-item disabled" id="l5">
+                                    <a class="page-link" style="color:black; background: #ddd;">5</a>
+                                </li>
+                                <li class="page-item disabled" id="next">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> > </a>
+                                </li>
+                                <li class="page-item disabled" id="nnext">
+                                    <a class="page-link" style="font-weight: bold; color:gray; background: #ddd;"> >> </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <form class="form-inline">
+                            <input id="menusearch" class="form-control mr-sm-2" style="width: 200px; margin: auto;" type="text"> </input>
+                            <a id="searchbtn" class="btn btn-primary">
+                                Search
+                            </a>
+                        </form>
+                    </nav>
+                </div>
+            </div>
+            <div class="row" style="padding-top:5px; padding-bottom: 5px;">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4" id="c1">
+                        </div>
+                        <div class="col-md-4" id="c2">
+                        </div>
+                        <div class="col-md-4" id="c3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src=./js/gather_img.js></script>
+    </body>
+
+    </html>
